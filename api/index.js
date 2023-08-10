@@ -8,6 +8,7 @@ router.use("/lead_time",require("./lead_time"));
 router.use("/commits",require("./commits"));
 router.use("/branches", require("./branches"));
 router.use("/collaborators", require("./collaborators"));
+router.use("/users", require("./users"));
 
 //404 Handling
 router.use((req, res, next) => {
