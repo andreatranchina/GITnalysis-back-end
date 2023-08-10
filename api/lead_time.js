@@ -35,7 +35,7 @@ router.get("/:owner/:repo",async(req,res,next)=>{
         const average=formatMilliseconds(sum/time_taken.length);
         res.json({average_lead_time:average});
     } catch (error) {
-        console.log("Error in average route",error)
+        console.log("Error in lead_time route",error)
         next(error);
     }
 
