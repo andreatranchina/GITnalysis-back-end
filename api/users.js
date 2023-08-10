@@ -81,6 +81,7 @@ router.get("/me/following",async(req,res,next)=>{
 //check if a person is followed by the authenticated user
 router.get("/me/following/:username",async(req,res,next)=>{
     try {
+        const username = req.params.username;
 
         const octokit = new Octokit({ 
             userAgent: {"User-Agent": "GITNALYSIS/1.0"},
@@ -178,6 +179,47 @@ router.get("/me/emails", async(req, res, next) => {
     }
 
 })
+
+//list repositories for authenticated user
+router.get("/me/repos", async(req, res, next) => {
+    try {
+
+        const octokit = new Octokit({ 
+            userAgent: {"User-Agent": "GITNALYSIS/1.0"},
+            auth: process.env.GITHUB_TOKEN 
+        });
+        const response = await octokit.request('GET /user/repos');
+        
+        res.json(response.data);
+    } catch (error) {
+        console.log("Error in average route",error)
+        next(error);
+    }
+
+})
+
+
+//list repositories for of a user by username
+router.get("/:username/repos", async(req, res, next) => {
+    try {
+        const username = req.params.username;
+
+        const octokit = new Octokit({ 
+            userAgent: {"User-Agent": "GITNALYSIS/1.0"},
+            auth: process.env.GITHUB_TOKEN 
+        });
+        const response = await octokit.request('GET /users/:username/repos', {
+            username
+        });
+        
+        res.json(response.data);
+    } catch (error) {
+        console.log("Error in average route",error)
+        next(error);
+    }
+
+})
+
 
 
 module.exports=router;
