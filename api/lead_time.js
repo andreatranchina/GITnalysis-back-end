@@ -15,7 +15,25 @@ router.get("/:owner/:repo",async(req,res,next)=>{
             owner,
             repo
         });
-        res.json(response);
+        const closed_PRs=response.data
+        let time_taken=closed_PRs.map((item)=>{
+            //if the PR was resolved by a merge request
+            if (item.merged_at){
+                const created_date=new Date(item.created_at)
+                const merged_at= new Date(item.merged_at)
+                const time_taken=merged_at-created_date;
+                return time_taken
+            }
+            return 0
+        })
+        //filtering out the times for PRs that were not closed via merge
+        time_taken=time_taken.filter((item)=>item!==0)
+        const sum=time_taken.reduce((item,acc)=>{
+            return acc+item
+        },0)
+        
+        const average=formatMilliseconds(sum/time_taken.length);
+        res.json({average_lead_time:average});
     } catch (error) {
         console.log("Error in lead_time route",error)
         next(error);
@@ -24,25 +42,6 @@ router.get("/:owner/:repo",async(req,res,next)=>{
 })
 
 
-// const closed_PRs=response.data
-// let time_taken=closed_PRs.map((item)=>{
-//     //if the PR was resolved by a merge request
-//     if (item.merged_at){
-//         const created_date=new Date(item.created_at)
-//         const merged_at= new Date(item.merged_at)
-//         const time_taken=merged_at-created_date;
-//         return time_taken
-//     }
-//     return 0
-// })
-// //filtering out the times for PRs that were not closed via merge
-// time_taken=time_taken.filter((item)=>item!==0)
-// const sum=time_taken.reduce((item,acc)=>{
-//     return acc+item
-// },0)
-
-// const average=formatMilliseconds(sum/time_taken.length);
-// res.json({average_lead_time:average});
 function formatMilliseconds(milliseconds) {
     const millisecondsPerSecond = 1000;
     const millisecondsPerMinute = 60 * 1000;
