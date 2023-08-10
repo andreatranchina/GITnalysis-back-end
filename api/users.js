@@ -1,17 +1,12 @@
 const router=require("express").Router();
-const {Octokit}=require('@octokit/rest')
+const octokit = require("../services/octokit");
 
-// mounted on: ("localhost:8080/api/users")
-
+// mounted on: http://localhost:8080/api/users
 
 //get authenticated user
 router.get("/me",async(req,res,next)=>{
     try {
 
-        const octokit = new Octokit({ 
-            userAgent: {"User-Agent": "GITNALYSIS/1.0"},
-            auth: process.env.GITHUB_TOKEN 
-        });
         const response = await octokit.request('GET /user');
         
         res.json(response.data);
@@ -27,10 +22,6 @@ router.get("/:username",async(req,res,next)=>{
 
         const username = req.params.username;
 
-        const octokit = new Octokit({ 
-            userAgent: {"User-Agent": "GITNALYSIS/1.0"},
-            auth: process.env.GITHUB_TOKEN 
-        });
         const response = await octokit.request('GET /users/:username', {
             username
         });
@@ -47,10 +38,6 @@ router.get("/:username",async(req,res,next)=>{
 router.get("/me/followers",async(req,res,next)=>{
     try {
 
-        const octokit = new Octokit({ 
-            userAgent: {"User-Agent": "GITNALYSIS/1.0"},
-            auth: process.env.GITHUB_TOKEN 
-        });
         const response = await octokit.request('GET /user/followers');
         
         res.json(response.data);
@@ -65,10 +52,6 @@ router.get("/me/followers",async(req,res,next)=>{
 router.get("/me/following",async(req,res,next)=>{
     try {
 
-        const octokit = new Octokit({ 
-            userAgent: {"User-Agent": "GITNALYSIS/1.0"},
-            auth: process.env.GITHUB_TOKEN 
-        });
         const response = await octokit.request('GET /user/following');
         
         res.json(response.data);
@@ -83,10 +66,6 @@ router.get("/me/following/:username",async(req,res,next)=>{
     try {
         const username = req.params.username;
 
-        const octokit = new Octokit({ 
-            userAgent: {"User-Agent": "GITNALYSIS/1.0"},
-            auth: process.env.GITHUB_TOKEN 
-        });
         const response = await octokit.request('GET /user/following/:username', {
             username
         });
@@ -104,10 +83,6 @@ router.get("/:username/followers",async(req,res,next)=>{
 
         const username = req.params.username;
 
-        const octokit = new Octokit({ 
-            userAgent: {"User-Agent": "GITNALYSIS/1.0"},
-            auth: process.env.GITHUB_TOKEN 
-        });
         const response = await octokit.request('GET /users/:username/followers', {
             username
         });
@@ -125,10 +100,6 @@ router.get("/:username/following",async(req,res,next)=>{
 
         const username = req.params.username;
 
-        const octokit = new Octokit({ 
-            userAgent: {"User-Agent": "GITNALYSIS/1.0"},
-            auth: process.env.GITHUB_TOKEN 
-        });
         const response = await octokit.request('GET /users/:username/following', {
             username
         });
@@ -146,10 +117,6 @@ router.get("/:username/following/:targetUser",async(req,res,next)=>{
 
         const { username, targetUser } = req.params;
 
-        const octokit = new Octokit({ 
-            userAgent: {"User-Agent": "GITNALYSIS/1.0"},
-            auth: process.env.GITHUB_TOKEN 
-        });
         const response = await octokit.request('GET /users/:username/following/:targetUser', {
             username,
             targetUser
@@ -165,11 +132,6 @@ router.get("/:username/following/:targetUser",async(req,res,next)=>{
 //list emails for authenticated user
 router.get("/me/emails", async(req, res, next) => {
     try {
-
-        const octokit = new Octokit({ 
-            userAgent: {"User-Agent": "GITNALYSIS/1.0"},
-            auth: process.env.GITHUB_TOKEN 
-        });
         const response = await octokit.request('GET /user/emails');
         
         res.json(response.data);
@@ -183,11 +145,6 @@ router.get("/me/emails", async(req, res, next) => {
 //list repositories for authenticated user
 router.get("/me/repos", async(req, res, next) => {
     try {
-
-        const octokit = new Octokit({ 
-            userAgent: {"User-Agent": "GITNALYSIS/1.0"},
-            auth: process.env.GITHUB_TOKEN 
-        });
         const response = await octokit.request('GET /user/repos');
         
         res.json(response.data);
@@ -204,10 +161,6 @@ router.get("/:username/repos", async(req, res, next) => {
     try {
         const username = req.params.username;
 
-        const octokit = new Octokit({ 
-            userAgent: {"User-Agent": "GITNALYSIS/1.0"},
-            auth: process.env.GITHUB_TOKEN 
-        });
         const response = await octokit.request('GET /users/:username/repos', {
             username
         });
