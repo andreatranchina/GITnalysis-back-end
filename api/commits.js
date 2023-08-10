@@ -25,7 +25,7 @@ router.get("/:owner/:repo",async(req,res,next)=>{
 
 })
 
-router.get("count/:owner/:repo",async(req,res,next)=>{
+router.get("/count/:owner/:repo",async(req,res,next)=>{
     try {
         const owner = req.params.owner;
         const repo = req.params.repo;
@@ -40,7 +40,7 @@ router.get("count/:owner/:repo",async(req,res,next)=>{
             commits:all_commits.length
         });
     } catch (error) {
-        console.log("Error in average route",error)
+        console.log("Error in commit count route",error)
         next(error);
     }
 
