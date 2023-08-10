@@ -9,6 +9,7 @@ router.use("/commits",require("./commits"));
 router.use("/branches", require("./branches"));
 router.use("/collaborators", require("./collaborators"));
 router.use("/users", require("./users"));
+router.use("/issues", require("./issues"));
 
 //404 Handling
 router.use((req, res, next) => {
