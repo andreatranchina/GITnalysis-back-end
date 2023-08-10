@@ -4,8 +4,9 @@ const router = require('express').Router();
 //example : router.use('/user', require("./user"));
 
 
-router.use("/lead_time",require("./lead_time"))
-router.use("/commits",require("./commits"))
+router.use("/lead_time",require("./lead_time"));
+router.use("/commits",require("./commits"));
+router.use("/branches", require("./branches"));
 
 //404 Handling
 router.use((req, res, next) => {
