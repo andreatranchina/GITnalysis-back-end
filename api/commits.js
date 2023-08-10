@@ -25,7 +25,7 @@ router.get("/:owner/:repo",async(req,res,next)=>{
 
 })
 
-router.get("/:owner/:repo",async(req,res,next)=>{
+router.get("count/:owner/:repo",async(req,res,next)=>{
     try {
         const owner = req.params.owner;
         const repo = req.params.repo;
