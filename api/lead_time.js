@@ -36,8 +36,41 @@ router.get("/:owner/:repo",async(req,res,next)=>{
         console.log("Error in lead_time route",error)
         next(error);
     }
-    
 })
+
+router.get("/running_average/:owner/:repo",async(req,res,next)=>{
+    try {
+        const owner = req.params.owner;
+        const repo = req.params.repo;
+       
+        const response = await octokit.request('GET /repos/:owner/:repo/pulls?state=closed', {
+            owner,
+            repo
+        });
+        const closed_PRs=response.data
+    
+        let sum=0
+        const running_average=[];
+        let count=1
+        for (let i=0;i<closed_PRs.length;i++){
+            let item=closed_PRs[i];
+            if (item.merged_at){
+                const created_date=new Date(item.created_at)
+                const merged_at= new Date(item.merged_at)
+                const time_taken=merged_at-created_date;
+                sum+=time_taken;
+                const average= formatMilliseconds(sum/(count))
+                running_average.push({merged_at,average})
+                count++
+            }
+        }
+        res.json(running_average)
+    } catch (error) {
+        console.log("Error in lead_time/running_average route",error)
+        next(error);
+    }
+})
+    
 
 
 function formatMilliseconds(milliseconds) {
