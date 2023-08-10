@@ -1,8 +1,7 @@
 const router=require("express").Router();
-const {Octokit}=require('@octokit/rest')
+const octokit = require("../services/octokit");
 
-// mounted on: ("localhost:8080/api/collaborators")
-
+// mounted on: http://localhost:8080/api/collaborators"
 
 //get all collaborators for a given repo
 router.get("/:owner/:repo",async(req,res,next)=>{
@@ -10,10 +9,6 @@ router.get("/:owner/:repo",async(req,res,next)=>{
         const owner = req.params.owner;
         const repo = req.params.repo;
        
-        const octokit = new Octokit({ 
-            userAgent: {"User-Agent": "GITNALYSIS/1.0"},
-            auth: process.env.GITHUB_TOKEN 
-        });
         const response = await octokit.request('GET /repos/:owner/:repo/collaborators', {
             owner,
             repo
@@ -35,10 +30,6 @@ router.get("/count/:owner/:repo",async(req,res,next)=>{
         const owner = req.params.owner;
         const repo = req.params.repo;
        
-        const octokit = new Octokit({ 
-            userAgent: {"User-Agent": "GITNALYSIS/1.0"},
-            auth: process.env.GITHUB_TOKEN 
-        });
         const response = await octokit.request('GET /repos/:owner/:repo/collaborators', {
             owner,
             repo
@@ -65,11 +56,6 @@ router.get("/count/:owner/:repo",async(req,res,next)=>{
 
 //         console.log(username);
 
-       
-//         const octokit = new Octokit({ 
-//             userAgent: {"User-Agent": "GITNALYSIS/1.0"},
-//             auth: process.env.GITHUB_TOKEN 
-//         });
 //         const response = await octokit.request('PUT /repos/:owner/:repo/collaborators/:username', {
 //             owner,
 //             repo,
@@ -91,11 +77,6 @@ router.get("/count/:owner/:repo",async(req,res,next)=>{
 
 //         const username = req.body;
 
-       
-//         const octokit = new Octokit({ 
-//             userAgent: {"User-Agent": "GITNALYSIS/1.0"},
-//             auth: process.env.GITHUB_TOKEN 
-//         });
 //         const response = await octokit.request('PUT /repos/:owner/:repo/collaborators/:username', {
 //             owner,
 //             repo,

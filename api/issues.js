@@ -1,7 +1,7 @@
 const router=require("express").Router();
-const {Octokit}=require('@octokit/rest');
+const octokit = require("../services/octokit");
 
-// mounted on : ("localhost:8080/api/issues")
+// mounted on: http://localhost:8080/api/issues
 
 // get number of issues linked to repository
 // ex: 
@@ -15,11 +15,6 @@ router.get("/:owner/:repo/count/getNum",async(req,res,next)=>{
     try {
         const owner = req.params.owner;
         const repo = req.params.repo;
-       
-        const octokit = new Octokit({ 
-            userAgent: {"User-Agent": "GITNALYSIS/1.0"},
-            auth: process.env.GITHUB_TOKEN 
-        });
 
         const responseClosed = await octokit.request('GET /repos/:owner/:repo/issues?state=closed', {
             owner,
@@ -60,10 +55,6 @@ router.get("/:owner/:repo/:state",async(req,res,next)=>{
         const repo = req.params.repo;
         const state = req.params.state
        
-        const octokit = new Octokit({ 
-            userAgent: {"User-Agent": "GITNALYSIS/1.0"},
-            auth: process.env.GITHUB_TOKEN 
-        });
         const response = await octokit.request('GET /repos/:owner/:repo/issues?state=:state', {
             owner,
             repo,

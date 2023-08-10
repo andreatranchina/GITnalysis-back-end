@@ -1,15 +1,14 @@
 const router=require("express").Router();
-const {Octokit}=require('@octokit/rest')
+const octokit = require("../services/octokit");
 
-/**The Full url
- * ("localhost:8080/api/commits")
- */
+// mounted on: "http://localhost:8080/api/commits"
+// note: do not need auth for these routes
+
 router.get("/:owner/:repo",async(req,res,next)=>{
     try {
         const owner = req.params.owner;
         const repo = req.params.repo;
        
-        const octokit = new Octokit({ userAgent: {"User-Agent": "GITNALYSIS/1.0",} });
         const response = await octokit.request('GET /repos/:owner/:repo/commits', {
             owner,
             repo
