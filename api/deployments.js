@@ -18,7 +18,7 @@ router.get("/:owner/:repo/count/getNum",async(req,res,next)=>{
         const allDeployments=response.data
         
         res.json({
-            numDeployments: allDeployments
+            numDeployments: allDeployments.length
         });
     } catch (error) {
         console.log("Error in average route",error)
@@ -68,9 +68,29 @@ router.get("/:owner/:repo/deploymentFrequency/:timeRange",async(req,res,next)=>{
         //filtering the data array based on the date range
 
         const filteredDeployments = allDeployments.filter(deployment => new Date (deployment.created_at) >= fromDate && new Date(deployment.created_at) <= currentDate);
+        
+        const deploymentsPerDayObject = {};
+        
+        filteredDeployments.map((deployment) => {
+            const deploymentDate = new Date (deployment.created_at); //formatted as a dateTime, need to get only date
+            const year = deploymentDate.getFullYear();
+            const month = deploymentDate.getMonth() + 1; // Months are zero-based, so add 1
+            const day = deploymentDate.getDate();
+            const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`
+
+            if (formattedDate in deploymentsPerDayObject){
+                deploymentsPerDayObject[formattedDate]++;
+            }
+            else {
+                deploymentsPerDayObject[formattedDate] = 1;
+            }
+        })
+
+        // res.json(filteredDeployments);
         res.json({
             numDeploymentsInRange: filteredDeployments.length,
             deploymentFrequency: filteredDeployments.length / daysAgo,
+            deploymentsPerDayObject,
             fromDate,
             toDate: currentDate,
         });
