@@ -27,7 +27,7 @@ router.get("/:owner/:repo/count/getNum",async(req,res,next)=>{
 })
 
 //get the total number of deployments linked to a repo over the past week or month
-//note:  param timeRange should be strings: pastDay, pastWeek or pastMonth
+//note:  param timeRange should be strings: pastDay, pastWeek, pastMonth OR pastYear
 // returns object ex:
 // {
 //     "numDeploymentsInRange": 2,
