@@ -40,7 +40,7 @@ router.get("/:owner/:repo/count/getNum",async(req,res,next)=>{
             }
         });
     } catch (error) {
-        console.log("Error in average route",error)
+        console.log("Error in retrieving num of issues",error)
         next(error);
     }
 })
@@ -136,7 +136,7 @@ router.get("/:owner/:repo/timeline/pastMonth",async(req,res,next)=>{
         
         res.json(issuesPerWeekObject);
     } catch (error) {
-        console.log("Error in average route",error)
+        console.log("Error in retrieving issue timeline",error)
         next(error);
     }
 })
@@ -215,7 +215,7 @@ router.get("/:owner/:repo/timeline/pastYear",async(req,res,next)=>{
         res.json(issuesPerMonthObject);
 
     } catch (error) {
-        console.log("Error in average route",error)
+        console.log("Error in retrieving issue timeline",error)
         next(error);
     }
 })
@@ -312,7 +312,7 @@ router.get("/:owner/:repo/:state",async(req,res,next)=>{
             issues:allIssues
         });
     } catch (error) {
-        console.log("Error in average route",error)
+        console.log("Error in retrieving issue timeline",error)
         next(error);
     }
 })
@@ -333,7 +333,7 @@ router.get("/:owner/:repo/events/getEvents",async(req,res,next)=>{
             allEvents
         });
     } catch (error) {
-        console.log("Error in average route",error)
+        console.log("Error in retrieving events",error)
         next(error);
     }
 })

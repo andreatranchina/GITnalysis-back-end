@@ -24,7 +24,7 @@ router.get("/:owner/:repo/count/getNum", async (req, res, next) => {
       numDeployments: allDeployments.length,
     });
   } catch (error) {
-    console.log("Error in average route", error);
+    console.log("Error in retrieving num of deployments", error);
     next(error);
   }
 });
@@ -111,7 +111,7 @@ router.get(
         toDate: currentDate,
       });
     } catch (error) {
-      console.log("Error in average route", error);
+      console.log("Error in retrieving deployment frequency", error);
       next(error);
     }
   }
