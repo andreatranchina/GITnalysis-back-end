@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@octokit/rest": "^20.0.1",
+    "axios": "^1.4.0",
     "body-parser": "^1.20.2",
     "connect-session-sequelize": "^7.1.7",
     "cors": "^2.8.5",
@@ -18,13 +19,16 @@
   "main": "app.js",
   "scripts": {
     "start": "nodemon app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
     "chai": "^4.3.7",
-    "mocha": "^10.2.0"
+    "chai-http": "^4.4.0",
+    "mocha": "^10.2.0",
+    "sinon": "^15.2.0",
+    "sinon-chai": "^3.7.0"
   }
 }
