@@ -26,6 +26,7 @@ app.enable("trust proxy");
 
 //mounting on routes
 app.use('/api', require('./api'));
+app.use('/github', require('./github'));
 
 app.get("/", (req, res, next) => {
     res.send("Hitting backend root success!")
@@ -55,4 +56,4 @@ const serverRun = () => {
 syncDB();
 serverRun();
 
-module.exports = app;
+module.exports = {app};
