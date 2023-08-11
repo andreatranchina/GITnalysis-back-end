@@ -29,12 +29,15 @@ router.get("/:owner/:repo/count/getNum",async(req,res,next)=>{
 //get the total number of deployments linked to a repo over the past week or month
 //note:  param timeRange should be strings: pastDay, pastWeek or pastMonth
 // returns object ex:
-//  {
+// {
 //     "numDeploymentsInRange": 2,
-//     "deploymentFrequency": 0.005479452054794521,
-//     "fromDate": "2022-08-11T01:11:45.409Z",
-//     "toDate": "2023-08-11T01:11:45.409Z" 
-//  }
+//     "deploymentFrequency": 0.06666666666666667,
+//     "deploymentsPerDayObject": {
+//         "2023-07-31": 2
+//     },
+//     "fromDate": "2023-07-12T04:06:26.263Z",
+//     "toDate": "2023-08-11T04:06:26.263Z"
+// }
 router.get("/:owner/:repo/deploymentFrequency/:timeRange",async(req,res,next)=>{
     try {
         const owner = req.params.owner;
