@@ -17,7 +17,34 @@ describe('Branches API', () => {
             chai.request(server).
             get(`/api/branches/${owner}/${repo}`).
             end((err,res)=>{
+                expect(res.body.branches).to.not.be.null;
                 expect(res.body.branches).to.be.an("array");
+                done();
+            })
+        })
+    })
+    
+    describe('COUNT ALL BRANCHES',()=>{
+        it("it should return an object with a key branches and an integer value ",(done)=>{
+            chai.request(server).
+            get(`/api/branches/count/${owner}/${repo}`).
+            end((err,res)=>{
+                expect(res.body.branches).to.not.be.null;
+                expect(res.body.branches).to.be.a("number");
+                done();
+            })
+        })
+    })
+
+    describe('DATA FOR A SINGLE BRANCH',()=>{
+        const branch="main"
+        it("should return the correct branch information",(done)=>{
+            chai.request(server).
+            get(`/api/branches/singleBranch/${owner}/${repo}/${branch}`).
+            end((err,res)=>{
+                expect(res.body.branch).to.not.be.null;
+                expect(res.body.branch).to.be.an("object");
+                expect(res.body.branch.name).equals(branch)
                 done();
             })
         })
