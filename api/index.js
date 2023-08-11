@@ -9,6 +9,7 @@ router.use("/branches", require("./branches"));
 router.use("/collaborators", require("./collaborators"));
 router.use("/users", require("./users"));
 router.use("/issues", require("./issues"));
+router.use("/deployments", require("./deployments"));
 
 //404 Handling
 router.use((req, res, next) => {
