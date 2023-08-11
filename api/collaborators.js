@@ -20,7 +20,7 @@ router.get("/:owner/:repo",autheticateUser,async(req,res,next)=>{
             collaborators
         });
     } catch (error) {
-        console.log("Error in average route",error)
+        console.log("Error in retrieving collaborators",error)
         next(error);
     }
 })
@@ -43,7 +43,7 @@ router.get("/count/:owner/:repo",async(req,res,next)=>{
             numCollaborators
         });
     } catch (error) {
-        console.log("Error in average route",error)
+        console.log("Error in retrieving num of collaborators",error)
         next(error);
     }
 })
