@@ -20,7 +20,7 @@ router.get("/:owner/:repo",async(req,res,next)=>{
             branches:all_branches
         });
     } catch (error) {
-        console.log("Error in average route",error)
+        console.log("Error in retrieving branches",error)
         next(error);
     }
 
@@ -42,7 +42,7 @@ router.get("/count/:owner/:repo",async(req,res,next)=>{
             branches:all_branches.length
         });
     } catch (error) {
-        console.log("Error in average route",error)
+        console.log("Error in retrieving num of branches",error)
         next(error);
     }
 
