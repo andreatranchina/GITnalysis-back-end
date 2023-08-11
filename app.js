@@ -61,9 +61,9 @@ const serverRun = () => {
 
 async function main() {
     console.log("This is going to print models: ", db.models);
-    await sessionStore.sync();
-    await db.sync({force: true });
-    await serverRun();
+    sessionStore.sync();
+    db.sync({force: true });
+    serverRun();
 }
 
 main()
