@@ -67,8 +67,15 @@ router.get('/timeline/:owner/:repo', async (req,res,next) => {
 
         //Iterating thru all of the commits and group them by date
         for(currCommit of all_commits){
+
             const date = new Date(currCommit.commit.author.date)
-            const key = date.toISOString().split('T')[0] // extracting the date from --> "2023-08-11T16:29:34Z"
+            // const key = date.toISOString().split('T')[0] // extracting the date from --> "2023-08-11T16:29:34Z"
+
+            // Use the following to get a monthly analysis of the commits done in a month
+
+            const year = date.getFullYear()
+            const month =  String(date.getMonth() + 1).padStart(2,0) // Months are 0-indexed, so add 1
+            const key = `${year}-${month}`
 
             if(commitsByDate.has(key)){
                 currCommitCount = commitsByDate.get(key)
