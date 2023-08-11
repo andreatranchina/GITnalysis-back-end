@@ -3,9 +3,16 @@ require("dotenv").config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser'); //may or may not need
-const db = require('./db');
 const app = express();
+const User= require("./db/models/user")
+
+//Database imports
 const pg = require("pg");
+const db = require('./db');
+const session = require("express-session");
+const SequelizeStore = require("connect-session-sequelize")(session.Store);
+const sessionStore = new SequelizeStore({ db });
+
 const PORT = 8080;
 
 //setup middleware 
@@ -26,6 +33,7 @@ app.enable("trust proxy");
 
 //mounting on routes
 app.use('/api', require('./api'));
+app.use('/github', require('./github'));
 
 app.get("/", (req, res, next) => {
     res.send("Hitting backend root success!")
@@ -51,8 +59,13 @@ const serverRun = () => {
     })
 }
 
+async function main() {
+    console.log("This is going to print models: ", db.models);
+    sessionStore.sync();
+    db.sync({force: true });
+    serverRun();
+}
 
-syncDB();
-serverRun();
+main()
 
-module.exports = app;
+module.exports = {app};
