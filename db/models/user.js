@@ -1,0 +1,21 @@
+const db = require("../db")
+const { DataTypes } = require("sequelize");
+
+
+const User=db.define(
+    "User",
+    {
+    githubID: {
+        type: DataTypes.INTEGER,
+        primaryKey:true,
+        allowNull: false,
+        unique: true,
+    },
+    githubAccessToken: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    }
+    }   
+)
+
+module.exports=User
