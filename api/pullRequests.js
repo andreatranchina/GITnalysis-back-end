@@ -21,6 +21,49 @@ router.get("/:owner/:repo", async (req, res, next) => {
   }
 });
 
+// get number of pull requests (open, closed, all) linked to repository
+// ex: 
+// reponse object : {
+//     openPullRequests: 3,
+//     closedPullRequests: 5,
+//     allPullRequests: 8
+// }
+router.get("/:owner/:repo/count/getNum",async(req,res,next)=>{
+  try {
+      const { owner, repo } = req.params;
+
+      const responseClosed = await octokit.request('GET /repos/:owner/:repo/pulls?state=closed', {
+          owner,
+          repo,
+      });
+      const numClosed = responseClosed.data.length;
+
+      const responseOpen = await octokit.request('GET /repos/:owner/:repo/pulls?state=open', {
+          owner,
+          repo,
+      });
+      const numOpen = responseOpen.data.length;
+
+      const responseAll = await octokit.request('GET /repos/:owner/:repo/pulls?state=all', {
+          owner,
+          repo,
+      });
+      const numAll = responseAll.data.length;
+      
+      res.json({
+          pullRequests: {
+              numOpen,
+              numClosed,
+              numAll
+          }
+      });
+  } catch (error) {
+      console.log("Error in retrieving num of pull requests",error)
+      next(error);
+  }
+})
+
+//get merge success rate
 router.get("/merge-success-rate/:owner/:repo", async (req, res) => {
   try {
     const { owner, repo } = req.params;
