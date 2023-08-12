@@ -5,4 +5,4 @@ const isLoggedIn = (req, res, next) => {
       res.status(401).send('Not Logged In');
     }
   }
-  module.exports = isLoggedIn
+module.exports = isLoggedIn
