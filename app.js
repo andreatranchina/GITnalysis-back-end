@@ -42,18 +42,17 @@ app.use(cors({
 
 app.enable("trust proxy");
 
-
-//mounting on routes
-app.use('/api', require('./api'));
-
-//mounting routes used to login with github OAuth2.0
-app.use('/github', require('./github'));
-
+//hiting root route
 app.get("/", (req, res, next) => {
     res.send("Hitting backend root success!")
 })
 
-const syncDB = () => db.sync();
+//mounting on routes
+app.use('/api', require('./api'));
+
+//mounting routes used to login/signup with Github OAuth2.0
+app.use('/github', require('./github'));
+
 
 // 404 Handling - This route should be at the end to handle unknown routes
 app.use((error, req, res, next) => {
@@ -67,7 +66,7 @@ const serverRun = () => {
   })
 }
 
-//aggregated all functions needed to be invoked when running the server
+//aggregated all functions needed to be invoked before running the server
 async function main() {
   console.log("This is going to print models: ", db.models);
     sessionStore.sync();
