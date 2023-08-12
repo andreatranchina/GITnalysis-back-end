@@ -4,8 +4,7 @@ const { DataTypes } = require("sequelize");
 
 const User=db.define(
     "User",
-    {
-    githubID: {
+    {githubID: {
         type: DataTypes.INTEGER,
         primaryKey:true,
         allowNull: false,
@@ -14,8 +13,12 @@ const User=db.define(
     githubAccessToken: {
         type: DataTypes.STRING,
         allowNull: true,
-    }
-    }   
+    },
+    
+    username:{
+        type:DataTypes.STRING,
+        allowNull:true
+    }}   
 )
 
 module.exports=User

@@ -73,7 +73,7 @@ async function main() {
     //syncing DB function
     // use {force: true} to drop the tables and starts from scratch (then re-seed)
     // const syncDB = () => db.sync( {force: true });
-    db.sync({force: true });
+    db.sync();
     serverRun();
 }
 

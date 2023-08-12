@@ -24,7 +24,8 @@ async function(accessToken, refreshToken, profile, done) {
   if (!user){
     await User.create({
       githubID:profile.id,
-      githubAccessToken:accessToken
+      githubAccessToken:accessToken,
+      username:profile.username
     })
   }
 
