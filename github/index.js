@@ -1,8 +1,8 @@
 const app = require("express")();
 
 const passport = require('passport');
-require('../passport/passportConfig');
 
+require('../passport/passportConfig');
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -10,13 +10,14 @@ app.use(passport.session());
 
 app.get('/auth/error', (req, res) => res.send('Unknown Error'))
 
-//localhost:8080/github
+//mounted on `localhost:8080/github`
 app.get('/auth',passport.authenticate('github',{ scope: [ 'user', 'repo' ] }));
 
-//localhost:8080/github
+//mounted on `localhost:8080/github`
 app.get('/auth/callback',passport.authenticate('github', { failureRedirect: '/auth/error' }),
 
 function(req, res) {
+  //redirect to the frontend url
   res.redirect('http://localhost:3000/');
 });
 

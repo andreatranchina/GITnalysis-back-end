@@ -2,9 +2,11 @@ const User = require("../db/models/user")
 const passport = require('passport');
 const GitHubStrategy = require('passport-github2').Strategy;
 require("dotenv").config();
+
 passport.serializeUser(function(user, done) {
   done(null, user);
 });
+
 passport.deserializeUser(function(user, done) {
   done(null, user);
 });

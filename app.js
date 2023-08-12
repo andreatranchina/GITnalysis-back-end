@@ -11,13 +11,15 @@ const db = require('./db');
 const session = require("express-session");
 const SequelizeStore = require("connect-session-sequelize")(session.Store);
 const sessionStore = new SequelizeStore({ db });
-const cookieConfig=require("./passport/cookieConfig")
 
 const PORT = 8080;
 
 //setup middleware 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
+
+//importing the cookie config and creating an express session to store it to be used by the passport
+const cookieConfig=require("./passport/cookieConfig")
 app.use(
     session({
       secret: "secret",
@@ -26,7 +28,8 @@ app.use(
       saveUninitialized: true,
       cookie: cookieConfig,
     })
-  );
+);
+
 app.use(cors({
     //production front end url
     origin: process.env.FRONTEND_URL || "http://localhost:3000", // allow to server to accept request from different origin
@@ -42,39 +45,40 @@ app.enable("trust proxy");
 
 //mounting on routes
 app.use('/api', require('./api'));
+
+//mounting routes used to login with github OAuth2.0
 app.use('/github', require('./github'));
 
 app.get("/", (req, res, next) => {
     res.send("Hitting backend root success!")
 })
 
+const syncDB = () => db.sync();
+
 // 404 Handling - This route should be at the end to handle unknown routes
 app.use((error, req, res, next) => {
     res.status(error.status || 500).send(error.message);
 });
 
-
-
-//syncing DB function
-// use {force: true} to drop the tables and starts from scratch (then re-seed)
-// const syncDB = () => db.sync( {force: true });
-const syncDB = () => db.sync();
-
-
 //Run server function
 const serverRun = () => {
-    app.listen(PORT, () => {
-        console.log(`Listening on port ${PORT}`);
-    })
+  app.listen(PORT, () => {
+    console.log(`Listening on port ${PORT}`);
+  })
 }
 
+//aggregated all functions needed to be invoked when running the server
 async function main() {
-    console.log("This is going to print models: ", db.models);
+  console.log("This is going to print models: ", db.models);
     sessionStore.sync();
+    //syncing DB function
+    // use {force: true} to drop the tables and starts from scratch (then re-seed)
+    // const syncDB = () => db.sync( {force: true });
     db.sync({force: true });
     serverRun();
 }
 
+//invoking all functions
 main()
 
 module.exports = app;
