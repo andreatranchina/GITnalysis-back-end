@@ -5,8 +5,9 @@ const { DataTypes } = require("sequelize");
 const User=db.define(
     "User",
     {
-    username: {
-        type: DataTypes.STRING,
+    githubID: {
+        type: DataTypes.INTEGER,
+        primaryKey:true,
         allowNull: false,
         unique: true,
     },

@@ -5,20 +5,28 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser'); //may or may not need
 const app = express();
-const User= require("./db/models/user")
 
 //Database imports
-const pg = require("pg");
 const db = require('./db');
 const session = require("express-session");
 const SequelizeStore = require("connect-session-sequelize")(session.Store);
 const sessionStore = new SequelizeStore({ db });
+const cookieConfig=require("./passport/cookieConfig")
 
 const PORT = 8080;
 
 //setup middleware 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
+app.use(
+    session({
+      secret: "secret",
+      store: sessionStore,
+      resave: true,
+      saveUninitialized: true,
+      cookie: cookieConfig,
+    })
+  );
 app.use(cors({
     //production front end url
     origin: process.env.FRONTEND_URL || "http://localhost:3000", // allow to server to accept request from different origin

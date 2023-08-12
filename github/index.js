@@ -1,12 +1,9 @@
 const app = require("express")();
-const cookieSession = require('cookie-session')
+
 const passport = require('passport');
 require('../passport/passportConfig');
 
-app.use(cookieSession({
-  name: 'github-auth-session',
-  keys: ['key1', 'key2']
-}))
+
 app.use(passport.initialize());
 app.use(passport.session());
 

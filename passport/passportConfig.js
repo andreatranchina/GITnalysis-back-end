@@ -17,10 +17,11 @@ passport.use(new GitHubStrategy({
 },
 
 async function(accessToken, refreshToken, profile, done) {
-  const user = await User.findOne({where:{username:profile.id}})
+  const user = await User.findOne({where:{githubID:profile.id}})
+  console.log(profile)
   if (!user){
     await User.create({
-      username:profile.id,
+      githubID:profile.id,
       githubAccessToken:accessToken
     })
   }
