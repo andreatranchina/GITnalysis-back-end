@@ -1,5 +1,6 @@
 const router=require("express").Router();
-const octokit = require("../services/octokit");
+const {Octokit}=require('@octokit/rest')
+// const octokit = require("../services/octokit");
 const autheticateUser= require("../middleware/auth")
 
 // mounted on: http://localhost:8080/api/collaborators"
@@ -7,8 +8,11 @@ const autheticateUser= require("../middleware/auth")
 //get all collaborators for a given repo
 router.get("/:owner/:repo",autheticateUser,async(req,res,next)=>{
     try {
-        const owner = req.params.owner;
-        const repo = req.params.repo;
+        console.log(req)
+        const octokit = new Octokit({ 
+            userAgent: {"User-Agent": "GITNALYSIS/1.0"},
+            auth: req.user.githubAccessToken
+        });
        
         const response = await octokit.request('GET /repos/:owner/:repo/collaborators', {
             owner,

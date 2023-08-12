@@ -1,4 +1,4 @@
-//github.js
+//./app.js
 require("dotenv").config();
 
 const express = require('express');
@@ -69,11 +69,12 @@ const serverRun = () => {
 //aggregated all functions needed to be invoked before running the server
 async function main() {
   console.log("This is going to print models: ", db.models);
+    db.sync();
     sessionStore.sync();
     //syncing DB function
     // use {force: true} to drop the tables and starts from scratch (then re-seed)
     // const syncDB = () => db.sync( {force: true });
-    db.sync({force: true });
+    db.sync();
     serverRun();
 }
 

@@ -1,14 +1,21 @@
+//./passport/passPortconfig.js
 const User = require("../db/models/user")
 const passport = require('passport');
 const GitHubStrategy = require('passport-github2').Strategy;
 require("dotenv").config();
 
 passport.serializeUser(function(user, done) {
-  done(null, user);
+  done(null, { provider: 'github', id: user.githubID });
 });
 
-passport.deserializeUser(function(user, done) {
-  done(null, user);
+passport.deserializeUser(async function(user, done) {
+  try {
+    const user = await User.findOne({ where: { githubID: identifier.id } });
+    done(null, user);
+  } catch (error) {
+    done(error, null);
+  }
+
 });
 
 passport.use(new GitHubStrategy({
@@ -20,14 +27,17 @@ passport.use(new GitHubStrategy({
 
 async function(accessToken, refreshToken, profile, done) {
   const user = await User.findOne({where:{githubID:profile.id}})
-  console.log(profile)
+  // console.log(profile)
   if (!user){
-    await User.create({
+    const newUser=await User.create({
       githubID:profile.id,
       githubAccessToken:accessToken
     })
+    return done(null,newUser)
   }
+  return done(null, user);
 
-  return done(null, profile);
 }
 ));
+
+module.exports=passport
