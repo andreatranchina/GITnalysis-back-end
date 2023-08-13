@@ -1,6 +1,5 @@
 const router=require("express").Router();
-const {Octokit}=require('@octokit/rest')
-// const octokit = require("../services/octokit");
+const octokitMain = require("../services/octokit");
 const autheticateUser= require("../middleware/auth")
 
 // mounted on: http://localhost:8080/api/collaborators"
@@ -9,10 +8,13 @@ const autheticateUser= require("../middleware/auth")
 router.get("/:owner/:repo",autheticateUser,async(req,res,next)=>{
     try {
         console.log(req)
-        const octokit = new Octokit({ 
-            userAgent: {"User-Agent": "GITNALYSIS/1.0"},
-            auth: req.user.githubAccessToken
-        });
+        //we still want the frontend to send the owner and the repo
+        const owner=req.params.owner
+        const repo=req.params.repo
+
+        //extracting the accesstoken from the req and setting up the octokit header
+        const octokit =  octokitMain(req.user.githubAccessToken)
+        
        
         const response = await octokit.request('GET /repos/:owner/:repo/collaborators', {
             owner,
@@ -30,15 +32,18 @@ router.get("/:owner/:repo",autheticateUser,async(req,res,next)=>{
 })
 
 //get number of collaborators for a give repo
-router.get("/count/:owner/:repo",async(req,res,next)=>{
+router.get("/count/:owner/:repo",autheticateUser,async(req,res,next)=>{
     try {
         const owner = req.params.owner;
         const repo = req.params.repo;
-       
+        
+        const octokit =  octokitMain(req.user.githubAccessToken)
+
         const response = await octokit.request('GET /repos/:owner/:repo/collaborators', {
             owner,
             repo
         });
+        
         const collaborators=response.data
 
         const numCollaborators = response.data.length
