@@ -20,21 +20,14 @@ const PORT = 8080;
 //setup middleware 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
-// app.use(cors({
-//   //production front end url
-//   origin: process.env.FRONTEND_URL || "http://localhost:3000", // allow to server to accept request from different origin
-//   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-//   credentials: true,
-//   allowedHeaders:
-//   "Authorization, X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
-//   preflightContinue: true,
-// }));
 app.use(cors({
-  origin: "*", // Allow requests from any origin
-  methods: "*", // Allow all HTTP methods
-  allowedHeaders: "*", // Allow all headers
-  credentials: true, // Allow sending cookies and authentication headers
-  preflightContinue: true, // Continue to handle preflight requests
+  //production front end url
+  origin: process.env.FRONTEND_URL || "http://localhost:3000", // allow to server to accept request from different origin
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  credentials: true,
+  allowedHeaders:
+  "Authorization, X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
+  preflightContinue: true,
 }));
 
 //importing the cookie config and creating an express session to store it to be used by the passport
