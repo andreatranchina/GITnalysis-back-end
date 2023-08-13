@@ -6,9 +6,7 @@ const octokit = require("../services/octokit");
 //get authenticated user
 router.get("/me",async(req,res,next)=>{
     try {
-
         const response = await octokit.request('GET /user');
-        
         res.json(response.data);
     } catch (error) {
         console.log("Error in average route",error)
