@@ -1,12 +1,11 @@
 const router=require("express").Router();
-const octokit = require("../services/octokit");
-const authUser=require("../middleware/auth")
+const octokit = require("../services/octokit")();
 
 // mounted on : http://localhost:8080/api/branches
 //note: do not need auth for these routes
 
 //get all branches linke to a repo (all branch data including name)
-router.get("/:owner/:repo",authUser,async(req,res,next)=>{
+router.get("/:owner/:repo",async(req,res,next)=>{
     try {
         const owner = req.params.owner;
         const repo = req.params.repo;
