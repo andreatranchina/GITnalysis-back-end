@@ -17,8 +17,14 @@ app.get('/auth',passport.authenticate('github',{ scope: [ 'user', 'repo' ] }));
 app.get('/auth/callback',passport.authenticate('github', { failureRedirect: '/auth/error' }),
 
 function(req, res) {
-  //redirect to the frontend url
-  res.redirect('http://localhost:3000/');
+  // Access authenticated user's profile from req.user
+  const { username, id } = req.user; // Assuming 'username' and 'id' are available in the profile
+
+  // Construct the redirect URL with the repository name as a query parameter
+  const redirectUrl = `http://localhost:3000/?username=${username}&userId=${id}`;
+
+  // Redirect to the frontend URL with query parameters
+  res.redirect(redirectUrl);
 });
 
 app.get('/logout', (req, res) => {
