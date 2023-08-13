@@ -31,14 +31,19 @@ app.use(cors({
 }));
 
 //importing the cookie config and creating an express session to store it to be used by the passport
-const cookieConfig=require("./passport/cookieConfig")
+
 app.use(
   session({
     secret: "secret",
     store: sessionStore,
     resave: true,
     saveUninitialized: true,
-    cookie: cookieConfig,
+    cookie: {
+      maxAge: 7 * 24 * 60 * 60 * 1000, // The maximum age (in milliseconds) of a valid session.
+      secure: false,
+      httpOnly: false,
+      sameSite: false,
+    },
   })
 );
 
@@ -66,11 +71,13 @@ app.get('/github/auth/callback',
   }),
   (req, res,next) => {
     // Successful authentication, log the user in
-    req.login(req.user, function(err) {
+    const user=req.user
+    req.logIn(user, function(err) {
       if (err) {
         return next(err);
       }
-      return res.redirect("http://localhost:3000"); // Redirect to your desired URL
+      // res.send("User Logged IN")
+      return res.redirect("http://localhost:3000/"); // Redirect to your desired URL
     });
   }
 );
@@ -103,7 +110,7 @@ async function main() {
   //syncing DB function
   // use {force: true} to drop the tables and starts from scratch (then re-seed)
   // const syncDB = () => db.sync( {force: true });
-    await db.sync({force: true });
+    await db.sync();
     await sessionStore.sync();
     serverRun();
 }
