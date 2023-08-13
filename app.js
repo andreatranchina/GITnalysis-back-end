@@ -60,14 +60,21 @@ app.get("/", (req, res, next) => {
 app.get('/github/auth',passport.authenticate('github',{ scope: [ 'user', 'repo' ] }));
 
 //mounted on `localhost:8080/github`
-app.get('/github/auth/callback',passport.authenticate('github', 
-{
-  successRedirect: 'http://localhost:3000',
-  failureRedirect: '/auth/error',
-}),
-(req,res,next)=>{
+app.get('/github/auth/callback',
+  passport.authenticate('github', {
+    failureRedirect: '/auth/error'
+  }),
+  (req, res,next) => {
+    // Successful authentication, log the user in
+    req.login(req.user, function(err) {
+      if (err) {
+        return next(err);
+      }
+      return res.redirect("http://localhost:3000"); // Redirect to your desired URL
+    });
+  }
+);
 
-});
 
 app.get('/logout', (req, res) => {
   req.session = null;
