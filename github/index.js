@@ -21,16 +21,24 @@ function(req, res) {
   const { username, id } = req.user; // Assuming 'username' and 'id' are available in the profile
 
   // Construct the redirect URL with the repository name as a query parameter
-  const redirectUrl = `http://localhost:3000/?username=${username}&userId=${id}`;
+  const redirectUrl = `${process.env.FRONTEND_URL}/?username=${username}&userId=${id}`;
 
   // Redirect to the frontend URL with query parameters
   res.redirect(redirectUrl);
 });
 
 app.get('/logout', (req, res) => {
-    req.session = null;
-    req.logout();
+  req.session.destroy(err => {
+    if (err) {
+      console.error('Error destroying session:', err);
+      return res.status(500).send('Logout failed');
+    }
+    
+    req.logout(); // Clear user's session
+
+    // Redirect to the home page or any other appropriate page after logout
     res.redirect('/');
-  })
+  });
+});
 
   module.exports=app
