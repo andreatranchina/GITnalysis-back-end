@@ -18,7 +18,7 @@
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.32.1"
   },
-  "name": "gitnalysis-back-end",
+  "name": "gitnalysis_back_end",
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
