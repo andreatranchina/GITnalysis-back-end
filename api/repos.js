@@ -76,5 +76,26 @@ router.get("/:owner/:repo/getActivity/:timePeriod",async(req,res,next)=>{
 
 })
 
+//get list of forks
+router.get("/:owner/:repo/getForks",async(req,res,next)=>{
+    try {
+        const { owner, repo } = req.params;
+
+        const response = await octokit.request('GET /repos/:owner/:repo/forks', {
+            owner,
+            repo
+        });
+        const repoForks = response.data
+        
+        res.json({
+            repoForks
+        });
+    } catch (error) {
+        console.log("Error in retrieving repo",error)
+        next(error);
+    }
+
+})
+
 
 module.exports=router;
