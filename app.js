@@ -16,7 +16,7 @@ const sessionStore = new SequelizeStore({ db });
 
 
 const PORT = 8080;
-
+app.enable("trust proxy");
 //setup middleware 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
@@ -36,8 +36,8 @@ app.use(
   session({
     secret: "secret",
     store: sessionStore,
-    resave: true,
-    saveUninitialized: true,
+    resave: false,
+    saveUninitialized: false,
     cookie: {
       maxAge: 7 * 24 * 60 * 60 * 1000, // The maximum age (in milliseconds) of a valid session.
       secure: false,
@@ -54,7 +54,7 @@ require("./passport/passportConfig")(passport)
 
 
   
-app.enable("trust proxy");
+
 //hiting root route
 app.get("/", (req, res, next) => {
     res.send("Hitting backend root success!")
@@ -83,11 +83,26 @@ app.get('/github/auth/callback',
 );
 
 
-app.get('/logout', (req, res) => {
-  req.session = null;
-  req.logout();
-  res.redirect('/');
-})
+app.get('/github/logout', async (req, res, next) => {
+  req.logout((err) => {
+    if (err) {
+      return next(err);
+    }
+    console.log("Logout successful in req.logout");
+
+    req.session.destroy(function (err) {
+      if (err) {
+        console.log(err);
+        res.status(500).send("Error occurred during logout");
+      } else {
+        res.clearCookie("connect.sid");
+        res.send("Logout successful");
+      }
+    });
+  });
+});
+
+
 
 //mounting on routes
 app.use('/api', require('./api'));

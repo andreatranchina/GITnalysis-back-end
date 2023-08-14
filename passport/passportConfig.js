@@ -25,16 +25,21 @@ module.exports =  (passport) =>{
   },
   
   async function(accessToken, refreshToken, profile, done) {
-    const user = await User.findOne({where:{githubID:profile.id}})
-    // console.log(profile)
-    if (!user){
-      const newUser=await User.create({
-        githubID:profile.id,
-        githubAccessToken:accessToken
-      })
-      return done(null,newUser)
+    try {
+      const user = await User.findOne({where:{githubID:profile.id}})
+      // console.log(profile)
+      if (!user){
+        const newUser=await User.create({
+          githubID:profile.id,
+          githubAccessToken:accessToken
+        })
+        return done(null,newUser)
+      }
+      return done(null, user);
+      
+    } catch (error) {
+      console.log("Error in Stategy")
     }
-    return done(null, user);
   
   }
   ));
