@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const octokit = require("../services/octokit");
+const octokit = require("../services/octokit")();
 
 // mounted on: "http://localhost:8080/api/deployments"
 
