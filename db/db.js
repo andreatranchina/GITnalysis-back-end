@@ -12,6 +12,7 @@ const db = new Sequelize(process.env.POSTGRES_URL || `postgres://localhost:5432/
 //     logging: false,
 // });
 
+
 db.authenticate()
   .then(() => {
     console.log(`DB connection ${name} works`);
