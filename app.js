@@ -77,7 +77,7 @@ app.get('/github/auth/callback',
         return next(err);
       }
       // res.send("User Logged IN")
-      return res.redirect("http://localhost:3000/"); // Redirect to your desired URL
+      return res.redirect(process.env.FRONTEND_URL); // Redirect to your desired URL
     });
   }
 );

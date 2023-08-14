@@ -21,7 +21,7 @@ module.exports =  (passport) =>{
     clientID: process.env.GITHUB_CLIENT_ID,
     clientSecret: process.env.GITHUB_CLIENT_SECRET,
     // callbackURL: `${process.env.FRONTEND_URL}/github/auth/callback` || "localhost:8080/github/auth/callback"
-    callbackURL: "http://localhost:8080/github/auth/callback"
+    callbackURL:`${process.env.BACKEND_URL}/github/auth/callback`
   },
   
   async function(accessToken, refreshToken, profile, done) {
