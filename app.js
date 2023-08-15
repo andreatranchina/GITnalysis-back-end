@@ -18,7 +18,7 @@ const sessionStore = new SequelizeStore({ db });
 const PORT = 8080;
 
 //setup middleware 
-app.set("trust proxy", 1);
+app.enable("trust proxy");
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(cors({
