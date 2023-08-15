@@ -14,11 +14,18 @@ const User=db.define(
         type: DataTypes.STRING,
         allowNull: true,
     },
-    
     username:{
         type:DataTypes.STRING,
         allowNull:true
-    }}   
+    },
+    fullname: {
+        type: DataTypes.STRING,
+    },
+    profilePhoto: {
+        type: DataTypes.STRING,
+        defaultValue: "",
+    },
+}   
 )
 
 module.exports=User
