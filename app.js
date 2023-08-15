@@ -16,10 +16,11 @@ const sessionStore = new SequelizeStore({ db });
 
 
 const PORT = 8080;
-app.enable("trust proxy");
+
 //setup middleware 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
+app.enable("trust proxy",true);
 app.use(cors({
   //production front end url
   origin: process.env.FRONTEND_URL || "http://localhost:3000", // allow to server to accept request from different origin
@@ -40,9 +41,9 @@ app.use(
     saveUninitialized: false,
     cookie: {
       maxAge: 7 * 24 * 60 * 60 * 1000, // The maximum age (in milliseconds) of a valid session.
-      secure: false,
+      secure: true,
       httpOnly: false,
-      sameSite: false,
+      sameSite: "none",
     },
   })
 );
@@ -51,9 +52,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 require("./passport/passportConfig")(passport)
 
-
-
-  
 
 //hiting root route
 app.get("/", (req, res, next) => {
