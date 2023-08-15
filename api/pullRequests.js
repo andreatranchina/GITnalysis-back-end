@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const octokit = require("../services/octokit");
+const octokit = require("../services/octokit")();
 
 // get all pull requests for repo
 router.get("/:owner/:repo", async (req, res, next) => {
