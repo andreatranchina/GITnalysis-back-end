@@ -75,7 +75,9 @@ app.get('/github/auth/callback',
         return next(err);
       }
       // res.send("User Logged IN")
-      return res.redirect(process.env.FRONTEND_URL); // Redirect to your desired URL
+      // Construct the redirect URL with the repository name as a query parameter
+      const redirectUrl = `${process.env.FRONTEND_URL}/?username=${user.username}&userId=${user.githubID}`;
+      return res.redirect(redirectUrl); // Redirect to your desired URL
     });
   }
 );
