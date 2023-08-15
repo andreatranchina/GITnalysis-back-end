@@ -69,13 +69,19 @@ app.get('/github/auth/callback',
   }),
   (req, res,next) => {
     // Successful authentication, log the user in
-    const user=req.user
+    user = req.user;
     req.logIn(user, function(err) {
       if (err) {
         return next(err);
       }
+      const { username, githubID } = user;
+      console.log(user,'is the current user auth');
       // res.send("User Logged IN")
-      return res.redirect(process.env.FRONTEND_URL); // Redirect to your desired URL
+       // Construct the redirect URL with the repository name as a query parameter
+      const redirectUrl = `${process.env.FRONTEND_URL}/?username=${username}&userId=${githubID}`;
+
+  // Redirect to the frontend URL with query parameters
+    res.redirect(redirectUrl);
     });
   }
 );
