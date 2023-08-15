@@ -18,7 +18,6 @@ const sessionStore = new SequelizeStore({ db });
 const PORT = 8080;
 
 //setup middleware 
-app.enable("trust proxy");
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(cors({
@@ -31,6 +30,7 @@ app.use(cors({
   preflightContinue: true,
 }));
 
+app.set("trust proxy",true);
 //importing the cookie config and creating an express session to store it to be used by the passport
 
 app.use(
