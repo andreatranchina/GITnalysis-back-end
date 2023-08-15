@@ -27,11 +27,16 @@ module.exports =  (passport) =>{
   async function(accessToken, refreshToken, profile, done) {
     try {
       const user = await User.findOne({where:{githubID:profile.id}})
+      console.log(profile,'is the full profile')
+      console.log(profile.username,'is the username')
+      console.log(profile.displayName,'isthe displayname')
+      console.log(profile.id,'is the github id')
       // console.log(profile)
       if (!user){
         const newUser=await User.create({
           githubID:profile.id,
-          githubAccessToken:accessToken
+          githubAccessToken:accessToken,
+          username:profile.username
         })
         return done(null,newUser)
       }
