@@ -20,7 +20,6 @@ const PORT = 8080;
 //setup middleware 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
-app.enable("trust proxy",true);
 app.use(cors({
   //production front end url
   origin: process.env.FRONTEND_URL || "http://localhost:3000", // allow to server to accept request from different origin
