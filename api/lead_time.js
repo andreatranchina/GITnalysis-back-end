@@ -1,5 +1,5 @@
 const router=require("express").Router();
-const octokitMain = require("../services/octokit");
+const octokitMain = require("../services/octokit")();
 
 //mounted on: http://localhost:8080/api/lead_time
 //note: do not need auth for these routes
