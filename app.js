@@ -22,7 +22,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(cors({
   //production front end url
-  origin: process.env.FRONTEND_URL || "http://localhost:3000", // allow to server to accept request from different origin
+  origin: process.env.FRONTEND_URL, // allow to server to accept request from different origin
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
   allowedHeaders:
