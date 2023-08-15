@@ -42,7 +42,7 @@ app.use(
     cookie: {
       maxAge: 7 * 24 * 60 * 60 * 1000, // The maximum age (in milliseconds) of a valid session.
       secure: true,
-      httpOnly: true,
+      httpOnly: false,
       sameSite: "none",
     },
   })
