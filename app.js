@@ -16,10 +16,11 @@ const sessionStore = new SequelizeStore({ db });
 
 
 const PORT = 8080;
-app.enable("trust proxy");
+
 //setup middleware 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
+app.enable("trust proxy");
 app.use(cors({
   //production front end url
   origin: process.env.FRONTEND_URL || "http://localhost:3000", // allow to server to accept request from different origin

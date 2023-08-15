@@ -11,7 +11,7 @@ router.get("/me",autheticateUser,async(req,res,next)=>{
         const response = await octokit.request('GET /user');
         res.json(response.data);
     } catch (error) {
-        console.log("Error in average route",error)
+        console.log("Error in user/me® route",error)
         next(error);
     }
 })
