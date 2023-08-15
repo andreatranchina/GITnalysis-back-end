@@ -18,6 +18,7 @@ const sessionStore = new SequelizeStore({ db });
 const PORT = 8080;
 
 //setup middleware 
+app.set("trust proxy", 1);
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(cors({
@@ -40,6 +41,8 @@ app.use(
     saveUninitialized: false,
     cookie: {
       maxAge: 7 * 24 * 60 * 60 * 1000, // The maximum age (in milliseconds) of a valid session.
+      sameSite:"none",
+      secure:true,
     },
   })
 );
