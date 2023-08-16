@@ -1,14 +1,14 @@
 const router=require("express").Router();
 const octokitMain = require("../services/octokit");
-
+const authenticate=require("../middleware/auth")
 //mounted on: http://localhost:8080/api/lead_time
 //note: do not need auth for these routes
 
-router.get("/:owner/:repo",async(req,res,next)=>{
+router.get("/:owner/:repo",authenticate,async(req,res,next)=>{
     try {
         const owner = req.params.owner;
         const repo = req.params.repo;
-        const octokit= octokitMain()
+        const octokit= octokitMain(req.user.githubAccessToken)
         const response = await octokit.request('GET /repos/:owner/:repo/pulls?state=closed', {
             owner,
             repo
@@ -38,11 +38,11 @@ router.get("/:owner/:repo",async(req,res,next)=>{
     }
 })
 
-router.get("/running_average/:owner/:repo",async(req,res,next)=>{
+router.get("/running_average/:owner/:repo",authenticate,async(req,res,next)=>{
     try {
         const owner = req.params.owner;
         const repo = req.params.repo;
-        const octokit= octokitMain()
+        const octokit= octokitMain(req.user.githubAccessToken)
         const response = await octokit.request('GET /repos/:owner/:repo/pulls?state=closed', {
             owner,
             repo

@@ -1,11 +1,11 @@
 const router = require("express").Router();
-const octokit = require("../services/octokit")();
-
+const octokitMain = require("../services/octokit");
+const autheticateUser= require("../middleware/auth")
 // get all pull requests for repo
-router.get("/:owner/:repo", async (req, res, next) => {
+router.get("/:owner/:repo",autheticateUser, async (req, res, next) => {
   try {
     const { owner, repo } = req.params;
-
+    const octokit =  octokitMain(req.user.githubAccessToken)
     const response = await octokit.request("GET /repos/:owner/:repo/pulls", {
       owner,
       repo,
@@ -28,10 +28,10 @@ router.get("/:owner/:repo", async (req, res, next) => {
 //     closedPullRequests: 5,
 //     allPullRequests: 8
 // }
-router.get("/:owner/:repo/count/getNum", async (req, res, next) => {
+router.get("/:owner/:repo/count/getNum",autheticateUser,async (req, res, next) => {
   try {
     const { owner, repo } = req.params;
-
+    const octokit =  octokitMain(req.user.githubAccessToken)
     const responseClosed = await octokit.request(
       "GET /repos/:owner/:repo/pulls?state=closed",
       {
@@ -73,11 +73,12 @@ router.get("/:owner/:repo/count/getNum", async (req, res, next) => {
 });
 
 //get merge success rate
-router.get("/merge-success-rate/:owner/:repo", async (req, res) => {
+router.get("/merge-success-rate/:owner/:repo",autheticateUser, async (req, res) => {
   try {
     const { owner, repo } = req.params;
 
     // get pull requests
+    const octokit =  octokitMain(req.user.githubAccessToken)
     const response = await octokit.request("GET /repos/:owner/:repo/pulls", {
       owner: owner,
       repo: repo,

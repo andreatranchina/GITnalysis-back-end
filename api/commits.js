@@ -1,14 +1,16 @@
 const router=require("express").Router();
-const octokit = require("../services/octokit")();
+const octokitMain = require("../services/octokit");
+const autheticateUser= require("../middleware/auth")
 
 // mounted on: "http://localhost:8080/api/commits"
 // note: do not need auth for these routes
 
-router.get("/:owner/:repo",async(req,res,next)=>{
+router.get("/:owner/:repo",autheticateUser,async(req,res,next)=>{
     try {
         const owner = req.params.owner;
         const repo = req.params.repo;
-       
+        
+        const octokit =  octokitMain(req.user.githubAccessToken)
         const all_commits = await octokit.paginate('GET /repos/:owner/:repo/commits', {
             owner,
             repo,
@@ -16,24 +18,25 @@ router.get("/:owner/:repo",async(req,res,next)=>{
         });
         res.json(
             all_commits
-        );
-    } catch (error) {
-        console.log("Error in average route",error)
-        next(error);
-    }
-
-})
-
-router.get("/count/:owner/:repo",async(req,res,next)=>{
-    try {
-        const owner = req.params.owner;
-        const repo = req.params.repo;
-        /*  when you use octokit.paginate, 
+            );
+        } catch (error) {
+            console.log("Error in average route",error)
+            next(error);
+        }
+        
+    })
+    
+    router.get("/count/:owner/:repo",async(req,res,next)=>{
+        try {
+            const owner = req.params.owner;
+            const repo = req.params.repo;
+            /*  when you use octokit.paginate, 
             it returns the concatenated results directly and doesn't nest them under a data property like a typical octokit request.
             So response.data doesn't exist, We can extract the length of every commit received
             from the paginated request by using const all_commits directly,
             and this should provide us with the right count for the repository.
-         */
+            */
+        const octokit =  octokitMain(req.user.githubAccessToken)
         const all_commits = await octokit.paginate('GET /repos/:owner/:repo/commits', {
             owner,
             repo,
@@ -47,7 +50,7 @@ router.get("/count/:owner/:repo",async(req,res,next)=>{
         console.log("Error in commit count route",error)
         next(error);
     }
-
+    
 })
 
 
@@ -55,11 +58,12 @@ router.get("/count/:owner/:repo",async(req,res,next)=>{
 // added to a repo on a daily basis for now. The timeframe can be changed to
 // monthly basis as well. For testing purposes the current timeframe is set to a daily-basis
 
-router.get('/timeline/:owner/:repo', async (req,res,next) => {
+router.get('/timeline/:owner/:repo',autheticateUser, async (req,res,next) => {
     try {
         const owner = req.params.owner
         const repo = req.params.repo
         
+        const octokit =  octokitMain(req.user.githubAccessToken)
         const all_commits = await octokit.paginate('GET /repos/:owner/:repo/commits', {
             owner,
             repo,

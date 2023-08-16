@@ -17,9 +17,9 @@ router.get("/me",autheticateUser,async(req,res,next)=>{
 })
 
 //get user info by username
-router.get("/:username",async(req,res,next)=>{
+router.get("/:username",autheticateUser,async(req,res,next)=>{
     try {
-        const octokit =  octokitMain()
+        const octokit =  octokitMain(req.user.githubAccessToken)
         const username = req.params.username;
 
         const response = await octokit.request('GET /users/:username', {
@@ -79,9 +79,9 @@ router.get("/me/following/:username",autheticateUser,async(req,res,next)=>{
 })
 
 //list of followers of a user by username
-router.get("/:username/followers",async(req,res,next)=>{
+router.get("/:username/followers",autheticateUser,async(req,res,next)=>{
     try {
-        const octokit =  octokitMain()
+        const octokit =  octokitMain(req.user.githubAccessToken)
         const username = req.params.username;
 
         const response = await octokit.request('GET /users/:username/followers', {
@@ -96,9 +96,9 @@ router.get("/:username/followers",async(req,res,next)=>{
 })
 
 //list of people a user follows
-router.get("/:username/following",async(req,res,next)=>{
+router.get("/:username/following",autheticateUser,async(req,res,next)=>{
     try {
-        const octokit =  octokitMain()
+        const octokit =  octokitMain(req.user.githubAccessToken)
         const username = req.params.username;
 
         const response = await octokit.request('GET /users/:username/following', {
@@ -113,9 +113,9 @@ router.get("/:username/following",async(req,res,next)=>{
 })
 
 //check if user is following another user
-router.get("/:username/following/:targetUser",async(req,res,next)=>{
+router.get("/:username/following/:targetUser",autheticateUser,async(req,res,next)=>{
     try {
-        const octokit =  octokitMain()
+        const octokit =  octokitMain(req.user.githubAccessToken)
         const { username, targetUser } = req.params;
 
         const response = await octokit.request('GET /users/:username/following/:targetUser', {
@@ -162,7 +162,7 @@ router.get("/me/repos",autheticateUser, async(req, res, next) => {
 router.get("/:username/repos",autheticateUser, async(req, res, next) => {
     try {
         const username = req.params.username;
-        const octokit =  octokitMain()
+        const octokit =  octokitMain(req.user.githubAccessToken)
         const response = await octokit.request('GET /users/:username/repos', {
             username
         });

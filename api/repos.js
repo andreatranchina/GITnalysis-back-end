@@ -1,13 +1,13 @@
 const router = require("express").Router();
 const octokitMain = require("../services/octokit");
-
+const autheticateUser= require("../middleware/auth")
 // mounted on : http://localhost:8080/api/repositories
 
 //get a repository
 router.get("/:owner/:repo/getRepo",async(req,res,next)=>{
     try {
         const { owner, repo } = req.params;
-
+        const octokit =  octokitMain(req.user.githubAccessToken)
         const response = await octokit.request('GET /repos/:owner/:repo', {
             owner,
             repo
@@ -47,7 +47,7 @@ router.get("/:owner/:repo/getActivity/:timePeriod",async(req,res,next)=>{
     //NOTE timePeriod param should be = "day" or "week" or "month" or "quarter" or "year"
     try {
         const { owner, repo, timePeriod } = req.params;
-
+        const octokit =  octokitMain(req.user.githubAccessToken)
         const response = await octokit.request('GET /repos/:owner/:repo/activity?time_period=:timePeriod', {
             owner,
             repo,
