@@ -143,7 +143,28 @@ function formatMilliseconds(milliseconds) {
 
     const seconds = Math.floor(milliseconds / millisecondsPerSecond);
 
-    return `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`;
+    let formattedTime = "";
+    
+    if (days > 0) {
+        formattedTime += `${days} days, `;
+    }
+    if (hours > 0) {
+        formattedTime += `${hours} hours, `;
+    }
+    if (minutes > 0) {
+        formattedTime += `${minutes} minutes, `;
+    }
+    if (seconds > 0) {
+        formattedTime += `${seconds} seconds`;
+    }
+    
+    // Remove the trailing comma and space if present
+    formattedTime = formattedTime.replace(/,\s*$/, "");
+
+    return formattedTime;
 }
+
+console.log(formatMilliseconds(123456789)); // Example usage
+
 
 module.exports=router
