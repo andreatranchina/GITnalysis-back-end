@@ -30,7 +30,7 @@ router.get("/:owner/:repo/count/getNum",async(req,res,next)=>{
             owner,
             repo,
         });
-        const numAll = responseAll.data.length;
+        const numAll = numOpen + numClosed;
         
         res.json({
             issues: {
