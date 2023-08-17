@@ -11,7 +11,6 @@ router.use("/users", require("./users"));
 router.use("/issues", require("./issues"));
 router.use("/deployments", require("./deployments"));
 router.use("/repos", require("./repos"));
-router.use("/repos", require("./repos"));
 router.use("/pull-requests", require("./pullRequests"));
 
 //404 Handling

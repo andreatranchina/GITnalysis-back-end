@@ -23,7 +23,7 @@ app.use(express.urlencoded({extended: true}));
 app.enable("trust proxy",true);
 app.use(cors({
   //production front end url
-  origin: process.env.FRONTEND_URL || "http://localhost:3000", // allow to server to accept request from different origin
+  origin: process.env.FRONTEND_URL, // allow to server to accept request from different origin
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
   allowedHeaders:
@@ -31,7 +31,8 @@ app.use(cors({
   preflightContinue: true,
 }));
 
-//importing the cookie config and creating an express session to store it to be used by the passport
+app.enable("trust proxy");
+
 
 app.use(
   session({
@@ -41,9 +42,9 @@ app.use(
     saveUninitialized: false,
     cookie: {
       maxAge: 7 * 24 * 60 * 60 * 1000, // The maximum age (in milliseconds) of a valid session.
-      // secure: true,
-      // httpOnly: false,
-      // sameSite: "none",
+      secure:true,
+      sameSite:"none",
+      httpOnly:false,
     },
   })
 );
