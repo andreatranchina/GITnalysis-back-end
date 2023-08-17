@@ -122,8 +122,8 @@ router.get("/:owner/:repo/timeline/pastMonth",authenticateUser,async(req,res,nex
                 
             }) //end map
             issuesPerWeekObject[`${weeksAgo} weeks ago`].all = 
-            issuesPerWeekObject[`${weeksAgo} weeks ago`].closed || 0 + 
-            issuesPerWeekObject[`${weeksAgo} weeks ago`].open || 0;
+            (issuesPerWeekObject[`${weeksAgo} weeks ago`].closed || 0) + 
+            (issuesPerWeekObject[`${weeksAgo} weeks ago`].open || 0);
             
             !issuesPerWeekObject[`${weeksAgo} weeks ago`].closed 
             ? issuesPerWeekObject[`${weeksAgo} weeks ago`].closed = 0 
@@ -200,8 +200,8 @@ router.get("/:owner/:repo/timeline/pastYear",authenticateUser,async(req,res,next
             }) //end map
 
             issuesPerMonthObject[`${monthsAgo} months ago`].all = 
-            issuesPerMonthObject[`${monthsAgo} months ago`].closed || 0
-            + issuesPerMonthObject[`${monthsAgo} months ago`].open || 0;
+            (issuesPerMonthObject[`${monthsAgo} months ago`].closed || 0)
+            + (issuesPerMonthObject[`${monthsAgo} months ago`].open || 0);
 
             !issuesPerMonthObject[`${monthsAgo} months ago`].closed 
             ? issuesPerMonthObject[`${monthsAgo} months ago`].closed = 0 
@@ -274,8 +274,8 @@ router.get("/:owner/:repo/timeline/pastWeek",authenticateUser,async(req,res,next
 
             }) //end map
             issuesPerDayObject[`${daysAgo} days ago`].all = 
-            issuesPerDayObject[`${daysAgo} days ago`].closed || 0 + 
-            issuesPerDayObject[`${daysAgo} days ago`].open || 0;
+            (issuesPerDayObject[`${daysAgo} days ago`].closed || 0) + 
+            (issuesPerDayObject[`${daysAgo} days ago`].open || 0);
 
             !issuesPerDayObject[`${daysAgo} days ago`].closed 
             ? issuesPerDayObject[`${daysAgo} days ago`].closed = 0 
