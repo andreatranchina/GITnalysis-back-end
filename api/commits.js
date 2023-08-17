@@ -26,16 +26,16 @@ router.get("/:owner/:repo",autheticateUser,async(req,res,next)=>{
         
     })
     
-    router.get("/count/:owner/:repo",async(req,res,next)=>{
-        try {
-            const owner = req.params.owner;
-            const repo = req.params.repo;
-            /*  when you use octokit.paginate, 
-            it returns the concatenated results directly and doesn't nest them under a data property like a typical octokit request.
-            So response.data doesn't exist, We can extract the length of every commit received
-            from the paginated request by using const all_commits directly,
-            and this should provide us with the right count for the repository.
-            */
+router.get("/count/:owner/:repo",autheticateUser,async(req,res,next)=>{
+    try {
+        const owner = req.params.owner;
+        const repo = req.params.repo;
+        /*  when you use octokit.paginate, 
+        it returns the concatenated results directly and doesn't nest them under a data property like a typical octokit request.
+        So response.data doesn't exist, We can extract the length of every commit received
+        from the paginated request by using const all_commits directly,
+        and this should provide us with the right count for the repository.
+        */
         const octokit =  octokitMain(req.user.githubAccessToken)
         const all_commits = await octokit.paginate('GET /repos/:owner/:repo/commits', {
             owner,
