@@ -1,5 +1,5 @@
 const router=require("express").Router();
-const octokitMain = require("../services/octokit")();
+const octokitMain = require("../services/octokit");
 const authenticateUser=require("../middleware/auth")
 
 // mounted on: http://localhost:8080/api/issues
