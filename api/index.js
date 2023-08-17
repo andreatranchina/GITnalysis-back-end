@@ -12,6 +12,7 @@ router.use("/issues", require("./issues"));
 router.use("/deployments", require("./deployments"));
 router.use("/repos", require("./repos"));
 router.use("/pull-requests", require("./pullRequests"));
+router.use("/forks", require("./forks"));
 
 //404 Handling
 router.use((req, res, next) => {
