@@ -125,8 +125,8 @@ async function main() {
   console.log("This is going to print models: ", db.models);
   //syncing DB function
   // use {force: true} to drop the tables and starts from scratch (then re-seed)
-  // const syncDB = () => db.sync( {force: true });
-    await db.sync();
+  const syncDB = () => db.sync( {force: true });
+    // await db.sync();
     await sessionStore.sync();
     serverRun();
 }
