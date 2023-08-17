@@ -41,9 +41,9 @@ app.use(
     saveUninitialized: false,
     cookie: {
       maxAge: 7 * 24 * 60 * 60 * 1000, // The maximum age (in milliseconds) of a valid session.
-      // secure:true,
-      // sameSite:"none",
-      // httpOnly:false,
+      secure:true,
+      sameSite:"none",
+      httpOnly:false,
     },
   })
 );
