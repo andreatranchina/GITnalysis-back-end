@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const octokitMain = require("../services/octokit");
+const octokit = require("../services/octokit");
 const autheticateUser= require("../middleware/auth")
 // mounted on: "http://localhost:8080/api/deployments"
 
@@ -119,8 +119,9 @@ router.get("/:owner/:repo/count/getNum",autheticateUser, async (req, res, next) 
               }
               );
               
-              async function calculateCFR(owner, repo) {
+              async function calculateCFR(owner, repo,accesstoken) {
                 try {
+                  const octokit =  octokitMain(accesstoken)
                   const deploymentsResponse = await octokit.request(
                     "GET /repos/:owner/:repo/deployments",
                     {
@@ -170,12 +171,12 @@ router.get("/:owner/:repo/count/getNum",autheticateUser, async (req, res, next) 
   }
   
   // route to get Change Failure Rate (CFR)
-  router.get("/:owner/:repo/cfr", async (req, res) => {
+  router.get("/:owner/:repo/cfr",autheticateUser, async (req, res) => {
     const owner = req.params.owner;
     const repo = req.params.repo;
 
   try {
-    const cfr = await calculateCFR(owner, repo);
+    const cfr = await calculateCFR(owner, repo,req.user.githubAccessToken);
     res.json({ cfr: cfr + "%" });
   } catch (error) {
     console.log(error);

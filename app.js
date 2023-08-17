@@ -20,6 +20,7 @@ const PORT = 8080;
 //setup middleware 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
+app.enable("trust proxy",true);
 app.use(cors({
   //production front end url
   origin: process.env.FRONTEND_URL, // allow to server to accept request from different origin
@@ -41,9 +42,9 @@ app.use(
     saveUninitialized: false,
     cookie: {
       maxAge: 7 * 24 * 60 * 60 * 1000, // The maximum age (in milliseconds) of a valid session.
-      secure:true,
-      sameSite:"none",
-      httpOnly:false,
+      // sameSite:"none",
+      // secure:true,
+      // httpOnly:false,
     },
   })
 );
@@ -69,19 +70,15 @@ app.get('/github/auth/callback',
   }),
   (req, res,next) => {
     // Successful authentication, log the user in
-    user = req.user;
+    const user=req.user
     req.logIn(user, function(err) {
       if (err) {
         return next(err);
       }
-      const { username, githubID } = user;
-      console.log(user,'is the current user auth');
       // res.send("User Logged IN")
-       // Construct the redirect URL with the repository name as a query parameter
-      const redirectUrl = `${process.env.FRONTEND_URL}/?username=${username}&userId=${githubID}`;
-
-  // Redirect to the frontend URL with query parameters
-    res.redirect(redirectUrl);
+      // Construct the redirect URL with the repository name as a query parameter
+      const redirectUrl = `${process.env.FRONTEND_URL}/?username=${user.username}&userId=${user.githubID}`;
+      return res.redirect(redirectUrl); // Redirect to your desired URL
     });
   }
 );

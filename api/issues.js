@@ -1,6 +1,7 @@
 const router=require("express").Router();
-const octokitMain = require("../services/octokit");
-const autheticateUser= require("../middleware/auth")
+const octokitMain = require("../services/octokit")();
+const authenticateUser=require("../middleware/auth")
+
 // mounted on: http://localhost:8080/api/issues
 
 // get number of issues linked to repository
@@ -10,7 +11,7 @@ const autheticateUser= require("../middleware/auth")
     //     closedIssues: 5,
     //     allIssues: 8
     // }
-    router.get("/:owner/:repo/count/getNum",autheticateUser,async(req,res,next)=>{
+    router.get("/:owner/:repo/count/getNum",authenticateUser,async(req,res,next)=>{
         try {
         const { owner, repo } = req.params;
             
@@ -32,7 +33,7 @@ const autheticateUser= require("../middleware/auth")
             owner,
             repo,
         });
-        const numAll = responseAll.data.length;
+        const numAll = numOpen + numClosed;
         
         res.json({
             issues: {
@@ -76,7 +77,7 @@ const autheticateUser= require("../middleware/auth")
                         //         "open": 0
                         //     }
                         // }
-                        router.get("/:owner/:repo/timeline/pastMonth",autheticateUser,async(req,res,next)=>{
+                        router.get("/:owner/:repo/timeline/pastMonth",authenticateUser,async(req,res,next)=>{
                             try {
                                 const { owner, repo } = req.params;
                                 const octokit= octokitMain(req.user.githubAccessToken)
@@ -144,7 +145,7 @@ const autheticateUser= require("../middleware/auth")
                         })
                         
                         //get timesline of issues (open/closed/all) over the past year
-                        router.get("/:owner/:repo/timeline/pastYear",autheticateUser,async(req,res,next)=>{
+                        router.get("/:owner/:repo/timeline/pastYear",authenticateUser,async(req,res,next)=>{
                             console.log("hit");
                             try {
                                 const { owner, repo } = req.params;
@@ -223,7 +224,7 @@ const autheticateUser= require("../middleware/auth")
 })
 
 //get timeline of issues (open/closed/all) of issues over past week
-router.get("/:owner/:repo/timeline/pastWeek",autheticateUser,async(req,res,next)=>{
+router.get("/:owner/:repo/timeline/pastWeek",authenticateUser,async(req,res,next)=>{
     try {
         const { owner, repo } = req.params;
         const octokit =  octokitMain(req.user.githubAccessToken)
@@ -299,7 +300,7 @@ router.get("/:owner/:repo/timeline/pastWeek",autheticateUser,async(req,res,next)
 
 //get list of repository issues --> can also get count from this by just taking length
 // note: state = open, closed, OR all
-router.get("/:owner/:repo/:state",autheticateUser,async(req,res,next)=>{
+router.get("/:owner/:repo/:state",authenticateUser,async(req,res,next)=>{
     try {
         const { owner, repo, state } = req.params;
         const octokit =  octokitMain(req.user.githubAccessToken)
