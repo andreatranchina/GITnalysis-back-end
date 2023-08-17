@@ -8,7 +8,6 @@ const autheticateUser= require("../middleware/auth")
 //get all collaborators for a given repo
 router.get("/:owner/:repo",autheticateUser,async(req,res,next)=>{
     try {
-        console.log(req)
         //we still want the frontend to send the owner and the repo
         const owner=req.params.owner
         const repo=req.params.repo
