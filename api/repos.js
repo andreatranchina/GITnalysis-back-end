@@ -1,12 +1,11 @@
 const router = require("express").Router();
 const octokitMain = require("../services/octokit");
-const autheticateUser= require("../middleware/auth");
 const authenticateUser = require("../middleware/auth");
 
 // mounted on : http://localhost:8080/api/repositories
 
 //get a repository
-router.get("/:owner/:repo/getRepo",async(req,res,next)=>{
+router.get("/:owner/:repo/getRepo",authenticateUser,async(req,res,next)=>{
     try {
         const { owner, repo } = req.params;
         const octokit =  octokitMain(req.user.githubAccessToken)

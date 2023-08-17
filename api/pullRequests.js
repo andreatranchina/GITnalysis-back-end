@@ -1,8 +1,4 @@
 const router = require("express").Router();
-
-
-
-
 const octokitMain = require("../services/octokit");
 const autheticateUser= require("../middleware/auth")
 
