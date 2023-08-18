@@ -12,14 +12,15 @@ router.get("/:owner/:repo/count/getNum",autheticateUser, async (req, res, next) 
     const repo = req.params.repo;
     
     const octokit =  octokitMain(req.user.githubAccessToken)
-    const response = await octokit.request(
+    const response = await octokit.paginate(
       "GET /repos/:owner/:repo/deployments",
       {
         owner,
         repo,
+        per_page:100,
       }
       );
-      const allDeployments = response.data;
+      const allDeployments = response;
       
       res.json({
         numDeployments: allDeployments.length,
@@ -52,15 +53,16 @@ router.get("/:owner/:repo/deploymentFrequency/:timeRange",
     const timeRange = req.params.timeRange;
     
     const octokit =  octokitMain(req.user.githubAccessToken)
-    const response = await octokit.request(
+    const response = await octokit.paginate(
       "GET /repos/:owner/:repo/deployments",
       {
         owner,
         repo,
+        per_page: 100,
       }
       );
       
-    const allDeployments = response.data;
+    const allDeployments = response;
     
     const currentDate = new Date();
     const fromDate = new Date();
@@ -125,12 +127,13 @@ router.get("/:owner/:repo/deploymentFrequency/:timeRange",
 async function calculateCFR(owner, repo,accesstoken) {
   try {
     const octokit =  octokitMain(accesstoken)
-    const deploymentsResponse = await octokit.request("GET /repos/:owner/:repo/deployments",
+    const deploymentsResponse = await octokit.paginate("GET /repos/:owner/:repo/deployments",
       {
         owner,
         repo,
+        per_page: 100,
       });
-    const deployments = deploymentsResponse.data;
+    const deployments = deploymentsResponse;
             
     const failedDeployments = [];
 

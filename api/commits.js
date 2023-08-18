@@ -4,6 +4,7 @@ const authenticateUser= require("../middleware/auth")
 // mounted on: "http://localhost:8080/api/commits"
 // note: do not need auth for these routes
 
+//get commits to a repo
 router.get("/:owner/:repo",authenticateUser,async(req,res,next)=>{
     try {
         const owner = req.params.owner;
@@ -25,6 +26,7 @@ router.get("/:owner/:repo",authenticateUser,async(req,res,next)=>{
 
 })
 
+//get num of commits on a repo
 router.get("/count/:owner/:repo",authenticateUser,async(req,res,next)=>{
     try {
         const owner = req.params.owner;
