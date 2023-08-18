@@ -11,8 +11,8 @@ const authenticateUser=require("../middleware/auth")
     //     closedIssues: 5,
     //     allIssues: 8
     // }
-    router.get("/:owner/:repo/count/getNum",authenticateUser,async(req,res,next)=>{
-        try {
+router.get("/:owner/:repo/count/getNum",authenticateUser,async(req,res,next)=>{
+    try {
         const { owner, repo } = req.params;
             
         const octokit =  octokitMain(req.user.githubAccessToken)
@@ -51,101 +51,101 @@ const authenticateUser=require("../middleware/auth")
 //get timesline of issues (open/closed/all) over the past month
 //ex response object: 
 // {
-    //     "0 weeks ago": {
-        //         "closed": 19,
-        //         "open": 3,
-        //         "all": 19
-        //     },
-        //     "1 weeks ago": {
-            //         "all": 0,
-            //         "closed": 0,
-            //         "open": 0
-            //     },
-            //     "2 weeks ago": {
-                //         "all": 0,
-                //         "closed": 0,
-                //         "open": 0
-                //     },
-                //     "3 weeks ago": {
-                    //         "all": 0,
-                    //         "closed": 0,
-                    //         "open": 0
-                    //     },
-                    //     "4 weeks ago": {
-                        //         "all": 0,
-                        //         "closed": 0,
-                        //         "open": 0
-                        //     }
-                        // }
-                        router.get("/:owner/:repo/timeline/pastMonth",authenticateUser,async(req,res,next)=>{
-                            try {
-                                const { owner, repo } = req.params;
-                                const octokit= octokitMain(req.user.githubAccessToken)
-                                const responseAll = await octokit.request('GET /repos/:owner/:repo/issues?state=all', {
-                                    owner,
-                                    repo,
-                                });
-                                
-                                const toDate = new Date();
-                                
-                                const issuesPerWeekObject = {
-                                    "0 weeks ago" : {},
-                                    "1 weeks ago" : {},
-                                    "2 weeks ago" : {},
-                                    "3 weeks ago" : {},
-                                    "4 weeks ago" : {},
-                                };
-                                let weeksAgo = 0;
-                                
-                                while (weeksAgo <=  4){
-                                    responseAll.data.map(issue => {
-                                        issueCreationDate = new Date(issue.created_at);
-                                        
-                                        if (issueCreationDate <= toDate){
-                                            if (issue.state === "closed" && new Date (issue.closed_at) <= toDate ) {
-                                                if ("closed" in issuesPerWeekObject[`${weeksAgo} weeks ago`]){
-                                                    issuesPerWeekObject[`${weeksAgo} weeks ago`].closed++;
-                                                }
-                                                else {
-                                                    issuesPerWeekObject[`${weeksAgo} weeks ago`].closed = 1;
-                                                }
-                                            }
-                                            else{
-                                                if ("open" in issuesPerWeekObject[`${weeksAgo} weeks ago`]){
-                                                    issuesPerWeekObject[`${weeksAgo} weeks ago`].open++;
-                                                }
-                                                else {
-                                                    issuesPerWeekObject[`${weeksAgo} weeks ago`].open = 1;
-                                                }
-                                            }
-                                        }
-                                        
-                                    }) //end map
-                                    issuesPerWeekObject[`${weeksAgo} weeks ago`].all = 
-                                    issuesPerWeekObject[`${weeksAgo} weeks ago`].closed || 0 + 
-                                    issuesPerWeekObject[`${weeksAgo} weeks ago`].open || 0;
-                                    
-                                    !issuesPerWeekObject[`${weeksAgo} weeks ago`].closed 
-                                    ? issuesPerWeekObject[`${weeksAgo} weeks ago`].closed = 0 
-                                    : null
-                                    
-                                    !issuesPerWeekObject[`${weeksAgo} weeks ago`].open 
-                                    ? issuesPerWeekObject[`${weeksAgo} weeks ago`].open = 0 
-                                    : null
-                                    
-                                    weeksAgo++;
-                                    toDate.setDate(toDate.getDate() - 7);
-                                }
-                                
-                                res.json(issuesPerWeekObject);
-                            } catch (error) {
-                                console.log("Error in retrieving issue timeline",error)
-                                next(error);
-                            }
-                        })
+//     "0 weeks ago": {
+//         "closed": 19,
+//         "open": 3,
+//         "all": 19
+//     },
+//     "1 weeks ago": {
+//         "all": 0,
+//         "closed": 0,
+//         "open": 0
+//     },
+//     "2 weeks ago": {
+//         "all": 0,
+//         "closed": 0,
+//         "open": 0
+//     },
+//     "3 weeks ago": {
+//         "all": 0,
+//         "closed": 0,
+//         "open": 0
+//     },
+//     "4 weeks ago": {
+//         "all": 0,
+//         "closed": 0,
+//         "open": 0
+//     }
+// }
+router.get("/:owner/:repo/timeline/pastMonth",authenticateUser,async(req,res,next)=>{
+    try {
+        const { owner, repo } = req.params;
+        const octokit= octokitMain(req.user.githubAccessToken)
+        const responseAll = await octokit.request('GET /repos/:owner/:repo/issues?state=all', {
+            owner,
+            repo,
+        });
+        
+        const toDate = new Date();
+        
+        const issuesPerWeekObject = {
+            "0 weeks ago" : {},
+            "1 weeks ago" : {},
+            "2 weeks ago" : {},
+            "3 weeks ago" : {},
+            "4 weeks ago" : {},
+        };
+        let weeksAgo = 0;
+        
+        while (weeksAgo <=  4){
+            responseAll.data.map(issue => {
+                issueCreationDate = new Date(issue.created_at);
+                
+                if (issueCreationDate <= toDate){
+                    if (issue.state === "closed" && new Date (issue.closed_at) <= toDate ) {
+                        if ("closed" in issuesPerWeekObject[`${weeksAgo} weeks ago`]){
+                            issuesPerWeekObject[`${weeksAgo} weeks ago`].closed++;
+                        }
+                        else {
+                            issuesPerWeekObject[`${weeksAgo} weeks ago`].closed = 1;
+                        }
+                    }
+                    else{
+                        if ("open" in issuesPerWeekObject[`${weeksAgo} weeks ago`]){
+                            issuesPerWeekObject[`${weeksAgo} weeks ago`].open++;
+                        }
+                        else {
+                            issuesPerWeekObject[`${weeksAgo} weeks ago`].open = 1;
+                        }
+                    }
+                }
+                
+            }) //end map
+            issuesPerWeekObject[`${weeksAgo} weeks ago`].all = 
+            (issuesPerWeekObject[`${weeksAgo} weeks ago`].closed || 0) + 
+            (issuesPerWeekObject[`${weeksAgo} weeks ago`].open || 0);
+            
+            !issuesPerWeekObject[`${weeksAgo} weeks ago`].closed 
+            ? issuesPerWeekObject[`${weeksAgo} weeks ago`].closed = 0 
+            : null
+            
+            !issuesPerWeekObject[`${weeksAgo} weeks ago`].open 
+            ? issuesPerWeekObject[`${weeksAgo} weeks ago`].open = 0 
+            : null
+            
+            weeksAgo++;
+            toDate.setDate(toDate.getDate() - 7);
+        }
+        
+        res.json(issuesPerWeekObject);
+    } catch (error) {
+        console.log("Error in retrieving issue timeline",error)
+        next(error);
+    }
+})
                         
-                        //get timesline of issues (open/closed/all) over the past year
-                        router.get("/:owner/:repo/timeline/pastYear",authenticateUser,async(req,res,next)=>{
+//get timesline of issues (open/closed/all) over the past year
+router.get("/:owner/:repo/timeline/pastYear",authenticateUser,async(req,res,next)=>{
                             console.log("hit");
                             try {
                                 const { owner, repo } = req.params;
@@ -200,8 +200,8 @@ const authenticateUser=require("../middleware/auth")
             }) //end map
 
             issuesPerMonthObject[`${monthsAgo} months ago`].all = 
-            issuesPerMonthObject[`${monthsAgo} months ago`].closed || 0
-            + issuesPerMonthObject[`${monthsAgo} months ago`].open || 0;
+            (issuesPerMonthObject[`${monthsAgo} months ago`].closed || 0)
+            + (issuesPerMonthObject[`${monthsAgo} months ago`].open || 0);
 
             !issuesPerMonthObject[`${monthsAgo} months ago`].closed 
             ? issuesPerMonthObject[`${monthsAgo} months ago`].closed = 0 
@@ -274,8 +274,8 @@ router.get("/:owner/:repo/timeline/pastWeek",authenticateUser,async(req,res,next
 
             }) //end map
             issuesPerDayObject[`${daysAgo} days ago`].all = 
-            issuesPerDayObject[`${daysAgo} days ago`].closed || 0 + 
-            issuesPerDayObject[`${daysAgo} days ago`].open || 0;
+            (issuesPerDayObject[`${daysAgo} days ago`].closed || 0) + 
+            (issuesPerDayObject[`${daysAgo} days ago`].open || 0);
 
             !issuesPerDayObject[`${daysAgo} days ago`].closed 
             ? issuesPerDayObject[`${daysAgo} days ago`].closed = 0 
@@ -321,7 +321,7 @@ router.get("/:owner/:repo/:state",authenticateUser,async(req,res,next)=>{
 })
 
 
-router.get("/:owner/:repo/events/getEvents",async(req,res,next)=>{
+router.get("/:owner/:repo/events/getEvents",authenticateUser,async(req,res,next)=>{
     try {
         const { owner, repo, state } = req.params;
         const octokit =  octokitMain(req.user.githubAccessToken)

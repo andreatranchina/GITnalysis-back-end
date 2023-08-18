@@ -42,9 +42,9 @@ app.use(
     saveUninitialized: false,
     cookie: {
       maxAge: 7 * 24 * 60 * 60 * 1000, // The maximum age (in milliseconds) of a valid session.
-      // sameSite:"none",
-      // secure:true,
-      // httpOnly:false,
+      sameSite:"none",
+      secure:true,
+      httpOnly:false,
     },
   })
 );
@@ -125,7 +125,7 @@ async function main() {
   console.log("This is going to print models: ", db.models);
   //syncing DB function
   // use {force: true} to drop the tables and starts from scratch (then re-seed)
-  // const syncDB = () => db.sync( {force: true });
+    // await db.sync( {force: true });
     await db.sync();
     await sessionStore.sync();
     serverRun();

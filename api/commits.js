@@ -1,14 +1,15 @@
 const router=require("express").Router();
-const octokit = require("../services/octokit")();
-
+const octokitMain = require("../services/octokit");
+const authenticateUser= require("../middleware/auth")
 // mounted on: "http://localhost:8080/api/commits"
 // note: do not need auth for these routes
 
-router.get("/:owner/:repo",async(req,res,next)=>{
+router.get("/:owner/:repo",authenticateUser,async(req,res,next)=>{
     try {
         const owner = req.params.owner;
         const repo = req.params.repo;
-       
+
+        const octokit =  octokitMain(req.user.githubAccessToken)
         const all_commits = await octokit.paginate('GET /repos/:owner/:repo/commits', {
             owner,
             repo,
@@ -24,7 +25,7 @@ router.get("/:owner/:repo",async(req,res,next)=>{
 
 })
 
-router.get("/count/:owner/:repo",async(req,res,next)=>{
+router.get("/count/:owner/:repo",authenticateUser,async(req,res,next)=>{
     try {
         const owner = req.params.owner;
         const repo = req.params.repo;
@@ -34,6 +35,7 @@ router.get("/count/:owner/:repo",async(req,res,next)=>{
             from the paginated request by using const all_commits directly,
             and this should provide us with the right count for the repository.
          */
+        const octokit =  octokitMain(req.user.githubAccessToken)
         const all_commits = await octokit.paginate('GET /repos/:owner/:repo/commits', {
             owner,
             repo,
@@ -55,11 +57,12 @@ router.get("/count/:owner/:repo",async(req,res,next)=>{
 // added to a repo on a daily basis for now. The timeframe can be changed to
 // monthly basis as well. For testing purposes the current timeframe is set to a daily-basis
 
-router.get('/timeline/:owner/:repo', async (req,res,next) => {
+router.get('/timeline/:owner/:repo',authenticateUser, async (req,res,next) => {
     try {
         const owner = req.params.owner
         const repo = req.params.repo
         
+        const octokit =  octokitMain(req.user.githubAccessToken)
         const all_commits = await octokit.paginate('GET /repos/:owner/:repo/commits', {
             owner,
             repo,
