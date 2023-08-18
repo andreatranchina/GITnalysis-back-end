@@ -33,7 +33,7 @@ app.use(cors({
 
 app.enable("trust proxy");
 
-if(process.env.BACKEND_URL='http://localhost:8080'){
+if(process.env.BACKEND_URL==='http://localhost:8080'){
   app.use(
     session({
       secret: "secret",
