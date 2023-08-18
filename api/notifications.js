@@ -134,7 +134,7 @@ router.get("/:page",authenticateUser,async(req,res,next)=>{
             notifications: responseArray,
         });
     } catch (error) {
-        console.log("Error in retrieving num of branches",error)
+        console.log("Error in retrieving notifications",error)
         next(error);
     }
     
