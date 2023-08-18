@@ -49,12 +49,13 @@ router.get("/:owner/:repo/getActivity/:timePeriod",authenticateUser,async(req,re
     try {
         const { owner, repo, timePeriod } = req.params;
         const octokit =  octokitMain(req.user.githubAccessToken)
-        const response = await octokit.request('GET /repos/:owner/:repo/activity?time_period=:timePeriod', {
+        const response = await octokit.paginate('GET /repos/:owner/:repo/activity?time_period=:timePeriod', {
             owner,
             repo,
             timePeriod,
+            per_page: 100,
         });
-        const repoActivityData = response.data
+        const repoActivityData = response
 
         let repoActivityArray = [];
 

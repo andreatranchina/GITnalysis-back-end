@@ -38,9 +38,11 @@ router.get("/:username",autheticateUser,async(req,res,next)=>{
 router.get("/me/followers",autheticateUser,async(req,res,next)=>{
     try {
         const octokit =  octokitMain(req.user.githubAccessToken)
-        const response = await octokit.request('GET /user/followers');
+        const response = await octokit.paginate('GET /user/followers', {
+            per_page:100,
+        });
         
-        res.json(response.data);
+        res.json(response);
     } catch (error) {
         console.log("Error in average route",error)
         next(error);
@@ -52,9 +54,11 @@ router.get("/me/followers",autheticateUser,async(req,res,next)=>{
 router.get("/me/following",autheticateUser,async(req,res,next)=>{
     try {
         const octokit =  octokitMain(req.user.githubAccessToken)
-        const response = await octokit.request('GET /user/following');
+        const response = await octokit.paginate('GET /user/following', {
+            per_page:100,
+        });
         
-        res.json(response.data);
+        res.json(response);
     } catch (error) {
         console.log("Error in average route",error)
         next(error);
@@ -84,11 +88,12 @@ router.get("/:username/followers",autheticateUser,async(req,res,next)=>{
         const octokit =  octokitMain(req.user.githubAccessToken)
         const username = req.params.username;
 
-        const response = await octokit.request('GET /users/:username/followers', {
-            username
+        const response = await octokit.paginate('GET /users/:username/followers', {
+            username,
+            per_page: 100,
         });
         
-        res.json(response.data);
+        res.json(response);
     } catch (error) {
         console.log("Error in average route",error)
         next(error);
@@ -101,11 +106,12 @@ router.get("/:username/following",autheticateUser,async(req,res,next)=>{
         const octokit =  octokitMain(req.user.githubAccessToken)
         const username = req.params.username;
 
-        const response = await octokit.request('GET /users/:username/following', {
-            username
+        const response = await octokit.paginate('GET /users/:username/following', {
+            username,
+            per_page: 100,
         });
         
-        res.json(response.data);
+        res.json(response);
     } catch (error) {
         console.log("Error in average route",error)
         next(error);
@@ -148,8 +154,10 @@ router.get("/me/emails", autheticateUser,async(req, res, next) => {
 router.get("/me/repos",autheticateUser, async(req, res, next) => {
     try {
         const octokit =  octokitMain(req.user.githubAccessToken)
-        const response = await octokit.request('GET /user/repos');
-        res.json(response.data);
+        const response = await octokit.paginate('GET /user/repos', {
+            per_page: 100,
+        });
+        res.json(response);
     } catch (error) {
         console.log("Error in average route",error)
         next(error);
@@ -157,17 +165,32 @@ router.get("/me/repos",autheticateUser, async(req, res, next) => {
 
 })
 
+//get num of repositories for authenticated user
+router.get("/me/repos",autheticateUser, async(req, res, next) => {
+    try {
+        const octokit =  octokitMain(req.user.githubAccessToken)
+        const response = await octokit.paginate('GET /user/repos', {
+            per_page: 100,
+        });
+        res.json(response.length);
+    } catch (error) {
+        console.log("Error in average route",error)
+        next(error);
+    }
+
+})
 
 //list repositories for of a user by username
 router.get("/:username/repos",autheticateUser, async(req, res, next) => {
     try {
         const username = req.params.username;
         const octokit =  octokitMain(req.user.githubAccessToken)
-        const response = await octokit.request('GET /users/:username/repos', {
-            username
+        const response = await octokit.paginate('GET /users/:username/repos', {
+            username,
+            per_page: 100,
         });
         
-        res.json(response.data);
+        res.json(response);
     } catch (error) {
         console.log("Error in average route",error)
         next(error);
