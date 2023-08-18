@@ -31,25 +31,26 @@ app.use(cors({
   preflightContinue: true,
 }));
 
+// app.set('trust proxy', 1);
 app.enable("trust proxy");
 
-if(process.env.BACKEND_URL==='http://localhost:8080'){
-  app.use(
-    session({
-      secret: "secret",
-      store: sessionStore,
-      resave: false,
-      saveUninitialized: false,
-      cookie: {
-        maxAge: 7 * 24 * 60 * 60 * 1000, // The maximum age (in milliseconds) of a valid session.
-        // sameSite:"none",
-        // secure:true,
-        // httpOnly:false,
-      },
-    })
-  );
-}
-else{
+// if(process.env.BACKEND_URL==='http://localhost:8080'){
+//   app.use(
+//     session({
+//       secret: "secret",
+//       store: sessionStore,
+//       resave: false,
+//       saveUninitialized: false,
+//       cookie: {
+//         maxAge: 7 * 24 * 60 * 60 * 1000, // The maximum age (in milliseconds) of a valid session.
+//         // sameSite:"none",
+//         // secure:true,
+//         // httpOnly:false,
+//       },
+//     })
+//   );
+// }
+// else{
   app.use(
   session({
     secret: "secret",
@@ -64,7 +65,7 @@ else{
     },
   })
   );  
-}
+// }
 
 
 app.use(passport.initialize());
