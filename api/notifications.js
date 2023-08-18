@@ -1,11 +1,12 @@
 const router=require("express").Router();
 const octokitMain = require("../services/octokit");
 const authenticateUser= require("../middleware/auth")
-// mounted on : http://localhost:8080/api/notifications
 const {calcTimeAgo} = require("../services/helperFunctions");
 
+// mounted on : http://localhost:8080/api/notifications
+
 //************* */
-//returns notifications from pastWeek, returns 30 per page (should be used with pagination on frontend);
+//following returns notifications from pastWeek, returns 30 per page (should be used with pagination on frontend);
 
 //ex reponse:
 // {
