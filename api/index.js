@@ -16,7 +16,7 @@ router.use("/forks", require("./forks"));
 
 //404 Handling
 router.use((req, res, next) => {
-  const error = new Error("404 Not Found");
+  const error = new Error("404 Not Found in ./api");
   error.status = 404;
   next(error);
 });
