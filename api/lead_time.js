@@ -9,9 +9,10 @@ router.get("/:owner/:repo",authenticate,async(req,res,next)=>{
         const owner = req.params.owner;
         const repo = req.params.repo;
         const octokit= octokitMain(req.user.githubAccessToken)
-        const response = await octokit.request('GET /repos/:owner/:repo/pulls?state=closed', {
+        const response = await octokit.paginate('GET /repos/:owner/:repo/pulls?state=closed', {
             owner,
-            repo
+            repo,
+            per_page: 100
         });
         const closed_PRs=response.data
         let time_taken=closed_PRs.map((item)=>{
