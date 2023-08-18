@@ -1,6 +1,7 @@
 const router=require("express").Router();
 const octokitMain = require("../services/octokit");
 const autheticateUser= require("../middleware/auth");
+const User = require("../db/models");
 
 // mounted on: http://localhost:8080/api/users
 
@@ -28,7 +29,7 @@ router.get("/:username",autheticateUser,async(req,res,next)=>{
         
         res.json(response.data);
     } catch (error) {
-        console.log("Error in average route",error)
+        console.log("Error in retrieving user route",error)
         next(error);
     }
 })
@@ -44,7 +45,7 @@ router.get("/me/followers",autheticateUser,async(req,res,next)=>{
         
         res.json(response);
     } catch (error) {
-        console.log("Error in average route",error)
+        console.log("Error in retrieving authenticated user followers",error)
         next(error);
     }
 })
@@ -60,7 +61,7 @@ router.get("/me/following",autheticateUser,async(req,res,next)=>{
         
         res.json(response);
     } catch (error) {
-        console.log("Error in average route",error)
+        console.log("Error in retrieving authenticated user followings",error)
         next(error);
     }
 })
@@ -77,7 +78,7 @@ router.get("/me/following/:username",autheticateUser,async(req,res,next)=>{
         
         res.json(response.data);
     } catch (error) {
-        console.log("Error in average route",error)
+        console.log("Error",error)
         next(error);
     }
 })
@@ -95,7 +96,7 @@ router.get("/:username/followers",autheticateUser,async(req,res,next)=>{
         
         res.json(response);
     } catch (error) {
-        console.log("Error in average route",error)
+        console.log("Error retrieving user followers",error)
         next(error);
     }
 })
@@ -113,7 +114,7 @@ router.get("/:username/following",autheticateUser,async(req,res,next)=>{
         
         res.json(response);
     } catch (error) {
-        console.log("Error in average route",error)
+        console.log("Error in retrieving user followings",error)
         next(error);
     }
 })
@@ -131,7 +132,7 @@ router.get("/:username/following/:targetUser",autheticateUser,async(req,res,next
         
         res.json(response.data);
     } catch (error) {
-        console.log("Error in average route",error)
+        console.log("Error",error)
         next(error);
     }
 })
@@ -144,7 +145,7 @@ router.get("/me/emails", autheticateUser,async(req, res, next) => {
         
         res.json(response.data);
     } catch (error) {
-        console.log("Error in average route",error)
+        console.log("Error in retrieving user emails",error)
         next(error);
     }
 
@@ -159,14 +160,14 @@ router.get("/me/repos",autheticateUser, async(req, res, next) => {
         });
         res.json(response);
     } catch (error) {
-        console.log("Error in average route",error)
+        console.log("Error in retreiving authenticated user repos",error)
         next(error);
     }
 
 })
 
 //get num of repositories for authenticated user
-router.get("/me/repos",autheticateUser, async(req, res, next) => {
+router.get("/me/repos/getNum",autheticateUser, async(req, res, next) => {
     try {
         const octokit =  octokitMain(req.user.githubAccessToken)
         const response = await octokit.paginate('GET /user/repos', {
@@ -174,7 +175,7 @@ router.get("/me/repos",autheticateUser, async(req, res, next) => {
         });
         res.json(response.length);
     } catch (error) {
-        console.log("Error in average route",error)
+        console.log("Error in retrieving num of repos for authenticated user",error)
         next(error);
     }
 
@@ -192,10 +193,23 @@ router.get("/:username/repos",autheticateUser, async(req, res, next) => {
         
         res.json(response);
     } catch (error) {
-        console.log("Error in average route",error)
+        console.log("Error in retrieving user repos",error)
         next(error);
     }
 
+})
+
+//get number of users signed up to our website
+router.get("/getWebsiteUsers/getNum", async(req, res, next) => {
+    try{
+        const allUsers = await User.findAll();
+
+        res.json({numUsers: allUsers.length});
+    }
+    catch(error){
+        console.log(error.message);
+        next(error);
+    }
 })
 
 
