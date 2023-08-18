@@ -1,7 +1,6 @@
 //./app.js
 require("dotenv").config();
 
-
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser'); //may or may not need
@@ -14,13 +13,12 @@ const session = require("express-session");
 const SequelizeStore = require("connect-session-sequelize")(session.Store);
 const sessionStore = new SequelizeStore({ db });
 
-
 const PORT = 8080;
 
 //setup middleware 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
-app.enable("trust proxy",true);
+// app.enable("trust proxy",true);
 app.use(cors({
   //production front end url
   origin: process.env.FRONTEND_URL, // allow to server to accept request from different origin
@@ -73,11 +71,9 @@ else{
   );  
 }
 
-
 app.use(passport.initialize());
 app.use(passport.session());
 require("./passport/passportConfig")(passport)
-
 
 //hiting root route
 app.get("/", (req, res, next) => {
@@ -127,7 +123,6 @@ app.get('/github/logout', async (req, res, next) => {
     });
   });
 });
-
 
 
 //mounting on routes
