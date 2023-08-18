@@ -6,11 +6,12 @@ router.get("/:owner/:repo",autheticateUser, async (req, res, next) => {
   try {
     const { owner, repo } = req.params;
     const octokit =  octokitMain(req.user.githubAccessToken)
-    const response = await octokit.request("GET /repos/:owner/:repo/pulls", {
+    const response = await octokit.paginate("GET /repos/:owner/:repo/pulls", {
       owner,
       repo,
+      per_page:100,
     });
-    const pullRequests = response.data;
+    const pullRequests = response;
 
     res.json({
       pullRequests: pullRequests,
@@ -32,32 +33,35 @@ router.get("/:owner/:repo/count/getNum",autheticateUser,async (req, res, next) =
   try {
     const { owner, repo } = req.params;
     const octokit =  octokitMain(req.user.githubAccessToken)
-    const responseClosed = await octokit.request(
+    const responseClosed = await octokit.paginate(
       "GET /repos/:owner/:repo/pulls?state=closed",
       {
         owner,
         repo,
+        per_page:100,
       }
     );
-    const numClosed = responseClosed.data.length;
+    const numClosed = responseClosed.length;
 
-    const responseOpen = await octokit.request(
+    const responseOpen = await octokit.paginate(
       "GET /repos/:owner/:repo/pulls?state=open",
       {
         owner,
         repo,
+        per_page: 100,
       }
     );
-    const numOpen = responseOpen.data.length;
+    const numOpen = responseOpen.length;
 
-    const responseAll = await octokit.request(
+    const responseAll = await octokit.paginate(
       "GET /repos/:owner/:repo/pulls?state=all",
       {
         owner,
         repo,
+        per_page:100,
       }
     );
-    const numAll = responseAll.data.length;
+    const numAll = responseAll.length;
 
     res.json({
       pullRequests: {
@@ -79,14 +83,15 @@ router.get("/merge-success-rate/:owner/:repo",autheticateUser, async (req, res) 
 
     // get pull requests
     const octokit =  octokitMain(req.user.githubAccessToken)
-    const response = await octokit.request("GET /repos/:owner/:repo/pulls", {
+    const response = await octokit.paginate("GET /repos/:owner/:repo/pulls", {
       owner: owner,
       repo: repo,
       state: "all",
+      per_page: 100,
     });
 
-    const pullRequests = response.data;
-    const totalPullRequests = response.data.length;
+    const pullRequests = response;
+    const totalPullRequests = response.length;
     let successfullyMergedPRs = 0;
 
     // count successfully merged pull requests
