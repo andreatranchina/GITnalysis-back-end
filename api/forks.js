@@ -16,12 +16,13 @@ router.get("/:owner/:repo",autheticateUser,async(req,res,next)=>{
         const octokit =  octokitMain(req.user.githubAccessToken)
         
        
-        const response = await octokit.request('GET /repos/:owner/:repo/forks', {
+        const response = await octokit.paginate('GET /repos/:owner/:repo/forks', {
             owner,
-            repo
+            repo,
+            per_page: 100,
+
         });
-        const forks=response.data
-        
+        const forks=response
         res.json({
             forks
         });
