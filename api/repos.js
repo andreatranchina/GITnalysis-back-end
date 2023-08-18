@@ -125,7 +125,7 @@ router.get(
         let totalLinesOfComments = 0;
 
         for (const content of contentsResponse.data) {
-          const fileExtensionRegex = /\.(js|py|java|cpp|php|html|css|rb)$/i;
+          const fileExtensionRegex = /\.(js|py|java|cpp|php|html|css|rb|jsx)$/i;
           if (
             content.type === "file" &&
             fileExtensionRegex.test(content.name)
