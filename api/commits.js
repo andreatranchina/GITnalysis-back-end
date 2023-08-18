@@ -1,10 +1,10 @@
 const router=require("express").Router();
-const octokitMain = require("../services/octokit")();
-const autheticateUser= require("../middleware/auth")
+const octokitMain = require("../services/octokit");
+const authenticateUser= require("../middleware/auth")
 // mounted on: "http://localhost:8080/api/commits"
 // note: do not need auth for these routes
 
-router.get("/:owner/:repo",autheticateUser,async(req,res,next)=>{
+router.get("/:owner/:repo",authenticateUser,async(req,res,next)=>{
     try {
         const owner = req.params.owner;
         const repo = req.params.repo;
@@ -25,7 +25,7 @@ router.get("/:owner/:repo",autheticateUser,async(req,res,next)=>{
 
 })
 
-router.get("/count/:owner/:repo",autheticateUser,async(req,res,next)=>{
+router.get("/count/:owner/:repo",authenticateUser,async(req,res,next)=>{
     try {
         const owner = req.params.owner;
         const repo = req.params.repo;
@@ -57,7 +57,7 @@ router.get("/count/:owner/:repo",autheticateUser,async(req,res,next)=>{
 // added to a repo on a daily basis for now. The timeframe can be changed to
 // monthly basis as well. For testing purposes the current timeframe is set to a daily-basis
 
-router.get('/timeline/:owner/:repo', async (req,res,next) => {
+router.get('/timeline/:owner/:repo',authenticateUser, async (req,res,next) => {
     try {
         const owner = req.params.owner
         const repo = req.params.repo
