@@ -11,11 +11,17 @@ router.get("/:owner/:repo",authenticateUser,async(req,res,next)=>{
         const repo = req.params.repo;
         
         const octokit =  octokitMain(req.user.githubAccessToken)
-        const response = await octokit.request('GET /repos/:owner/:repo/branches', {
+        // const response = await octokit.request('GET /repos/:owner/:repo/branches', {
+        //     owner,
+        //     repo
+        // });
+        // const all_branches=response.data
+        const response = await octokit.paginate('GET /repos/:owner/:repo/branches', {
             owner,
-            repo
+            repo,
+            per_page: 100,
         });
-        const all_branches=response.data
+        const all_branches=response
         
         res.json({
             branches:all_branches
@@ -34,11 +40,12 @@ router.get("/count/:owner/:repo",authenticateUser,async(req,res,next)=>{
         const repo = req.params.repo;
         
         const octokit =  octokitMain(req.user.githubAccessToken)
-        const response = await octokit.request('GET /repos/:owner/:repo/branches', {
+        const response = await octokit.paginate('GET /repos/:owner/:repo/branches', {
             owner,
-            repo
+            repo,
+            per_page: 100,
         });
-        const all_branches=response.data
+        const all_branches=response
         
         res.json({
             branches:all_branches.length

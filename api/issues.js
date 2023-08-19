@@ -16,22 +16,25 @@ router.get("/:owner/:repo/count/getNum",authenticateUser,async(req,res,next)=>{
         const { owner, repo } = req.params;
             
         const octokit =  octokitMain(req.user.githubAccessToken)
-        const responseClosed = await octokit.request('GET /repos/:owner/:repo/issues?state=closed', {
+        const responseClosed = await octokit.paginate('GET /repos/:owner/:repo/issues?state=closed', {
             owner,
             repo,
+            per_page: 100,
         });
-        const numClosed = responseClosed.data.length;
+        const numClosed = responseClosed.length;
 
-        const responseOpen = await octokit.request('GET /repos/:owner/:repo/issues?state=open', {
+        const responseOpen = await octokit.paginate('GET /repos/:owner/:repo/issues?state=open', {
             owner,
             repo,
+            per_page: 100,
         });
-        const numOpen = responseOpen.data.length;
+        const numOpen = responseOpen.length;
         
 
-        const responseAll = await octokit.request('GET /repos/:owner/:repo/issues?state=all', {
+        const responseAll = await octokit.paginate('GET /repos/:owner/:repo/issues?state=all', {
             owner,
             repo,
+            per_page: 100,
         });
         const numAll = numOpen + numClosed;
         
@@ -81,9 +84,10 @@ router.get("/:owner/:repo/timeline/pastMonth",authenticateUser,async(req,res,nex
     try {
         const { owner, repo } = req.params;
         const octokit= octokitMain(req.user.githubAccessToken)
-        const responseAll = await octokit.request('GET /repos/:owner/:repo/issues?state=all', {
+        const responseAll = await octokit.paginate('GET /repos/:owner/:repo/issues?state=all', {
             owner,
             repo,
+            per_page: 100,
         });
         
         const toDate = new Date();
@@ -98,7 +102,7 @@ router.get("/:owner/:repo/timeline/pastMonth",authenticateUser,async(req,res,nex
         let weeksAgo = 0;
         
         while (weeksAgo <=  4){
-            responseAll.data.map(issue => {
+            responseAll.map(issue => {
                 issueCreationDate = new Date(issue.created_at);
                 
                 if (issueCreationDate <= toDate){
@@ -150,9 +154,10 @@ router.get("/:owner/:repo/timeline/pastYear",authenticateUser,async(req,res,next
                             try {
                                 const { owner, repo } = req.params;
                                 const octokit= octokitMain(req.user.githubAccessToken)
-                                const responseAll = await octokit.request('GET /repos/:owner/:repo/issues?state=all', {
+                                const responseAll = await octokit.paginate('GET /repos/:owner/:repo/issues?state=all', {
                                     owner,
                                     repo,
+                                    per_page: 100,
                                 });
                                 
                                 const toDate = new Date();
@@ -175,7 +180,7 @@ router.get("/:owner/:repo/timeline/pastYear",authenticateUser,async(req,res,next
         let monthsAgo = 0;
 
         while (monthsAgo <=  12){
-            responseAll.data.map(issue => {
+            responseAll.map(issue => {
                 issueCreationDate = new Date(issue.created_at);
         
                 if (issueCreationDate <= toDate){
@@ -228,9 +233,10 @@ router.get("/:owner/:repo/timeline/pastWeek",authenticateUser,async(req,res,next
     try {
         const { owner, repo } = req.params;
         const octokit =  octokitMain(req.user.githubAccessToken)
-        const responseAll = await octokit.request('GET /repos/:owner/:repo/issues?state=all', {
+        const responseAll = await octokit.paginate('GET /repos/:owner/:repo/issues?state=all', {
             owner,
             repo,
+            per_page: 100,
         });
 
         const toDate = new Date();
@@ -250,7 +256,7 @@ router.get("/:owner/:repo/timeline/pastWeek",authenticateUser,async(req,res,next
         let daysAgo = 0;
 
         while (daysAgo <=  7){
-            responseAll.data.map(issue => {
+            responseAll.map(issue => {
                 issueCreationDate = new Date(issue.created_at);
         
                 if (issueCreationDate <= toDate){
@@ -304,12 +310,13 @@ router.get("/:owner/:repo/:state",authenticateUser,async(req,res,next)=>{
     try {
         const { owner, repo, state } = req.params;
         const octokit =  octokitMain(req.user.githubAccessToken)
-        const response = await octokit.request('GET /repos/:owner/:repo/issues?state=:state', {
+        const response = await octokit.paginate('GET /repos/:owner/:repo/issues?state=:state', {
             owner,
             repo,
-            state
+            state,
+            per_page: 100,
         });
-        const allIssues=response.data
+        const allIssues=response
         
         res.json({
             issues:allIssues
@@ -325,12 +332,13 @@ router.get("/:owner/:repo/events/getEvents",authenticateUser,async(req,res,next)
     try {
         const { owner, repo, state } = req.params;
         const octokit =  octokitMain(req.user.githubAccessToken)
-        const response = await octokit.request('GET /repos/:owner/:repo/issues/events', {
+        const response = await octokit.paginate('GET /repos/:owner/:repo/issues/events', {
             owner,
             repo,
-            state
+            state,
+            per_page: 100,
         });
-        const allEvents=response.data
+        const allEvents=response
         
         res.json({
             allEvents

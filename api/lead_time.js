@@ -14,7 +14,7 @@ router.get("/:owner/:repo",authenticate,async(req,res,next)=>{
             repo,
             per_page: 100
         });
-        const closed_PRs=response.data
+        const closed_PRs=response;
         let time_taken=closed_PRs.map((item)=>{
             //if the PR was resolved by a merge request
             if (item.merged_at){
@@ -44,11 +44,12 @@ router.get("/running_average/:owner/:repo",authenticate,async(req,res,next)=>{
         const owner = req.params.owner;
         const repo = req.params.repo;
         const octokit= octokitMain(req.user.githubAccessToken)
-        const response = await octokit.request('GET /repos/:owner/:repo/pulls?state=closed', {
+        const response = await octokit.paginate('GET /repos/:owner/:repo/pulls?state=closed', {
             owner,
-            repo
+            repo,
+            per_page: 100,
         });
-        const closed_PRs=response.data
+        const closed_PRs=response
     
         let sum=0
         const running_average=[];

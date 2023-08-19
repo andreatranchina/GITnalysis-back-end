@@ -1,9 +1,9 @@
 //./app.js
 require("dotenv").config();
 
-const express = require("express");
-const cors = require("cors");
-const bodyParser = require("body-parser"); //may or may not need
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser'); //may or may not need
 const app = express();
 
 //Database imports
@@ -17,19 +17,17 @@ const PORT = 8080;
 
 //setup middleware
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.enable("trust proxy", true);
-app.use(
-  cors({
-    //production front end url
-    origin: process.env.FRONTEND_URL, // allow to server to accept request from different origin
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    credentials: true,
-    allowedHeaders:
-      "Authorization, X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
-    preflightContinue: true,
-  })
-);
+app.use(express.urlencoded({extended: true}));
+// app.enable("trust proxy",true);
+app.use(cors({
+  //production front end url
+  origin: process.env.FRONTEND_URL, // allow to server to accept request from different origin
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  credentials: true,
+  allowedHeaders:
+  "Authorization, X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
+  preflightContinue: true,
+}));
 
 if (process.env.BACKEND_URL === "http://localhost:8080") {
   app.enable("trust proxy");
@@ -71,7 +69,7 @@ if (process.env.BACKEND_URL === "http://localhost:8080") {
 
 app.use(passport.initialize());
 app.use(passport.session());
-require("./passport/passportConfig")(passport);
+require("./passport/passportConfig")(passport)
 
 //hiting root route
 app.get("/", (req, res, next) => {

@@ -13,10 +13,11 @@ router.use("/deployments", require("./deployments"));
 router.use("/repos", require("./repos"));
 router.use("/pull-requests", require("./pullRequests"));
 router.use("/forks", require("./forks"));
+router.use("/notifications", require("./notifications"));
 
 //404 Handling
 router.use((req, res, next) => {
-  const error = new Error("404 Not Found");
+  const error = new Error("404 Not Found in ./api");
   error.status = 404;
   next(error);
 });
