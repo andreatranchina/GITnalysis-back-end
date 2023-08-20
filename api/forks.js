@@ -14,8 +14,7 @@ router.get("/:owner/:repo",autheticateUser,async(req,res,next)=>{
         const repo=req.params.repo
 
         //extracting the accesstoken from the req and setting up the octokit header
-        const octokit =  octokitMain(req.user.githubAccessToken)
-        
+        const octokit =  octokitMain(req.user.githubAccessToken)      
        
         const response = await octokit.paginate('GET /repos/:owner/:repo/forks', {
             owner,
