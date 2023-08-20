@@ -1,3 +1,5 @@
+const { route } = require("./collaborators");
+
 const router = require("express").Router();
 
 //Mounted on /api --> require needed routes from other files here
@@ -14,6 +16,7 @@ router.use("/repos", require("./repos"));
 router.use("/pull-requests", require("./pullRequests"));
 router.use("/forks", require("./forks"));
 router.use("/notifications", require("./notifications"));
+router.use("/stars", require("./stars"));
 
 //404 Handling
 router.use((req, res, next) => {
