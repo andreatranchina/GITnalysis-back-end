@@ -4,28 +4,39 @@ const autheticateUser= require("../middleware/auth")
 // mounted on : http://localhost:8080/api/branches
 //note: do not need auth for these routes
 
-//get all branches linke to a repo (all branch data including name)
-router.get("/:owner/:repo",autheticateUser,async(req,res,next)=>{
+//get all branches linked to a repo (all branch data including name)
+router.get("/:owner/:repo", autheticateUser, async (req, res, next) => {
     try {
         const owner = req.params.owner;
         const repo = req.params.repo;
-        
-        const octokit =  octokitMain(req.user.githubAccessToken)
-        const response = await octokit.request('GET /repos/:owner/:repo/branches', {
+
+        const octokit = octokitMain(req.user.githubAccessToken);
+        const response = await octokit.request("GET /repos/:owner/:repo/branches", {
             owner,
-            repo
+            repo,
         });
-        const all_branches=response.data
-        
+
+        const all_branches = await Promise.all(response.data.map(async (branch) => {
+            const commitDetails = await octokit.request(`GET /repos/:owner/:repo/git/commits/:commit_sha`, {
+                owner,
+                repo,
+                commit_sha: branch.commit.sha
+            });
+            return {
+                name: branch.name,
+                commitDate: commitDetails.data.committer.date
+            };
+        }));
+
         res.json({
-            branches:all_branches
+            branches: all_branches,
         });
     } catch (error) {
-        console.log("Error in retrieving branches",error)
+        console.log("Error in retrieving branches", error);
         next(error);
     }
-    
-})
+});
+
 
 //get number of branches (count) linked to a repo
 router.get("/count/:owner/:repo",autheticateUser,async(req,res,next)=>{
