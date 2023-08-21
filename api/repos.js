@@ -29,6 +29,48 @@ router.get(
   }
 );
 
+//get a repository created, updated, pushed dates & timeAgo
+// ex. response
+// {
+//   "repoDates": {
+//       "createdAt": "2023-08-09",
+//       "updatedAt": "2023-08-20",
+//       "pushedAt": "2023-08-21",
+//       "createdTimeAgo": "12 days ago",
+//       "updatedTimeAgo": "20 hours ago",
+//       "pushedTimeAgo": "9 hours ago"
+//   }
+// }
+router.get(
+  "/:owner/:repo/getRepo/dates",
+  authenticateUser,
+  async (req, res, next) => {
+    try {
+      const { owner, repo } = req.params;
+      const octokit = octokitMain(req.user.githubAccessToken);
+      const response = await octokit.request("GET /repos/:owner/:repo", {
+        owner,
+        repo,
+      });
+      const repoData = response.data;
+
+      res.json({
+        repoDates: {
+          createdAt: repoData.created_at.split('T')[0],
+          updatedAt: repoData.updated_at.split('T')[0],
+          pushedAt: repoData.pushed_at.split('T')[0],
+          createdTimeAgo: calcTimeAgo(new Date(repoData.created_at)),
+          updatedTimeAgo: calcTimeAgo(new Date(repoData.updated_at)),
+          pushedTimeAgo: calcTimeAgo(new Date(repoData.pushed_at)),          
+        }
+      });
+    } catch (error) {
+      console.log("Error in retrieving repo", error);
+      next(error);
+    }
+  }
+);
+
 //list repository activities (notifications for speciic repository)
 // ex response:
 // {
