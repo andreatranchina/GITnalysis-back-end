@@ -4,7 +4,13 @@ const authenticateUser= require("../middleware/auth")
 // mounted on : http://localhost:8080/api/branches
 //note: do not need auth for these routes
 
-//get all branches linke to a repo (all branch data including name)
+//get all branches linke to a repo (all branch data including name) returned in sorted order by date created
+// ex response
+// "branches": [
+//     {
+//         "name": "cookie-dev",
+//         "commitDate": "2023-08-21T01:01:55Z",
+//         "commitDateNoTime": "2023-08-21"
 router.get("/:owner/:repo",authenticateUser,async(req,res,next)=>{
     try {
         const owner = req.params.owner;
@@ -21,8 +27,22 @@ router.get("/:owner/:repo",authenticateUser,async(req,res,next)=>{
             repo,
             per_page: 100,
         });
-        const all_branches=response
-        
+
+        const all_branches = await Promise.all(response.map(async (branch) => {
+            const commitDetails = await octokit.request(`GET /repos/:owner/:repo/git/commits/:commit_sha`, {
+                owner,
+                repo,
+                commit_sha: branch.commit.sha
+            });
+            return {
+                name: branch.name,
+                commitDate: commitDetails.data.committer.date,
+                commitDateNoTime: new Date(commitDetails.data.committer.date).toISOString().split('T')[0],
+            };
+        }));
+
+        const sortedBranches = all_branches.sort((a, b) => new Date(b.commitDate) - new Date(a.commitDate));
+
         res.json({
             branches:all_branches
         });
