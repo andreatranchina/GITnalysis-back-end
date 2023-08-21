@@ -26,7 +26,7 @@ router.get("/:owner/:repo",authenticateUser,async(req,res,next)=>{
 
 })
 
-//get num of commits on a repo
+//get num of commits on a repo and todays commits
 router.get("/count/:owner/:repo",authenticateUser,async(req,res,next)=>{
     try {
         const owner = req.params.owner;
@@ -43,9 +43,21 @@ router.get("/count/:owner/:repo",authenticateUser,async(req,res,next)=>{
             repo,
             per_page: 100
         });
+
+        const all_commits_copy = all_commits;
+
+        yesterdaysDateTime = new Date();
+        yesterdaysDateTime.setDate(yesterdaysDateTime.getDate()-1);
+
+        todays_commits = [];
+        all_commits_copy.map(commit => {
+            const commitDate = new Date(commit.commit.author.date);
+            commitDate >= yesterdaysDateTime && todays_commits.push(commit);
+        })
         
         res.json({
-            commits:all_commits.length
+            commits:all_commits.length,
+            todaysCommits:todays_commits.length,
         });
     } catch (error) {
         console.log("Error in commit count route",error)
