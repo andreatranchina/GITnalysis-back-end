@@ -1,6 +1,7 @@
 const router=require("express").Router();
 const octokitMain = require("../services/octokit");
-const authenticateUser= require("../middleware/auth")
+const authenticateUser= require("../middleware/auth");
+const { all } = require("axios");
 // mounted on: "http://localhost:8080/api/commits"
 // note: do not need auth for these routes
 
@@ -71,13 +72,30 @@ router.get("/count/:owner/:repo",authenticateUser,async(req,res,next)=>{
 // added to a repo on a daily basis for now. The timeframe can be changed to
 // monthly basis as well. For testing purposes the current timeframe is set to a daily-basis
 
-router.get('/timeline/:owner/:repo',authenticateUser, async (req,res,next) => {
+router.get('/timeline/:owner/:repo/:timeRange',authenticateUser, async (req,res,next) => {
     try {
         const owner = req.params.owner
         const repo = req.params.repo
+        const timeRange=req.params.timeRange
+        let daysAgo="";
+        timeRange === "pastDay"
+        ? (daysAgo = 1)
+        : timeRange === "pastWeek"
+        ? (daysAgo = 7)
+        : timeRange === "pastMonth"
+        ? (daysAgo = 30)
+        : timeRange === "pastYear"
+        ? (daysAgo = 365)
+        : null;
         
+        let today = new Date();
+        let sinceDate = new Date(today);
+        sinceDate.setDate(today.getDate() - daysAgo);
+
+        let untilDate = new Date(today);
+
         const octokit =  octokitMain(req.user.githubAccessToken)
-        const all_commits = await octokit.paginate('GET /repos/:owner/:repo/commits', {
+        const all_commits = await octokit.paginate(`GET /repos/:owner/:repo/commits?since=${sinceDate.toISOString()}&until=${untilDate.toISOString()}`, {
             owner,
             repo,
             per_page: 100
