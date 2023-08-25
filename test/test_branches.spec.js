@@ -5,6 +5,7 @@ const server= require("../app")
 const { response } = require('express')
 chai.should()
 chai.use(chaihttp)
+const cookie=require("./cookie")
 
 
 
@@ -16,6 +17,7 @@ describe('Branches API', () => {
         it("it should return a array of branches",(done)=>{
             chai.request(server).
             get(`/api/branches/${owner}/${repo}`).
+            set('Cookie',`connect.sid=${cookie}`).
             end((err,res)=>{
                 expect(res.body.branches).to.not.be.null;
                 expect(res.body.branches).to.be.an("array");
@@ -28,6 +30,7 @@ describe('Branches API', () => {
         it("it should return an object with a key branches and an integer value ",(done)=>{
             chai.request(server).
             get(`/api/branches/count/${owner}/${repo}`).
+            set('Cookie',`connect.sid=${cookie}`).
             end((err,res)=>{
                 expect(res.body.branches).to.not.be.null;
                 expect(res.body.branches).to.be.a("number");
@@ -41,6 +44,7 @@ describe('Branches API', () => {
         it("should return the correct branch information",(done)=>{
             chai.request(server).
             get(`/api/branches/singleBranch/${owner}/${repo}/${branch}`).
+            set('Cookie',`connect.sid=${cookie}`).
             end((err,res)=>{
                 expect(res.body.branch).to.not.be.null;
                 expect(res.body.branch).to.be.an("object");
