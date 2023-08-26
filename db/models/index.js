@@ -1,7 +1,16 @@
 //requires
-const User=require("./user")
+const User = require("./user");
+const Repo = require("./repo");
+const Branch = require("./branch");
 
 //associations
 
+User.hasMany(Repo, {
+  foreignKey: "userId",
+});
 
-module.exports=User;
+Repo.hasMany(Branch, {
+  foreignKey: "repoId",
+});
+
+module.exports = { User, Repo };
