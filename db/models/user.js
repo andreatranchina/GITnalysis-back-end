@@ -19,7 +19,7 @@ const User=db.define(
         type:DataTypes.STRING,
         allowNull:true
     },
-    fullname: {
+    fullName: {
         type: DataTypes.STRING,
     },
     profilePhoto: {

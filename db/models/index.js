@@ -6,6 +6,10 @@ const Branch = require("./branch");
 //associations
 
 User.hasMany(Repo, {
+  foreignKey: "githubID",
+});
+
+Repo.belongsTo(User, {
   foreignKey: "userId",
 });
 
@@ -13,4 +17,8 @@ Repo.hasMany(Branch, {
   foreignKey: "repoId",
 });
 
-module.exports = { User, Repo };
+Branch.belongsTo(Repo, {
+  foreignKey: "repoId",
+});
+
+module.exports = { User, Repo, Branch };

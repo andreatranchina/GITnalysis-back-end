@@ -2,6 +2,7 @@ const router = require("express").Router();
 const octokitMain = require("../services/octokit");
 const authenticateUser = require("../middleware/auth");
 const { calcTimeAgo } = require("../services/helperFunctions");
+const { Repo } = require("../db/models");
 
 // mounted on : http://localhost:8080/api/repos
 
@@ -10,21 +11,60 @@ router.get(
   "/:owner/:repo/getRepo",
   authenticateUser,
   async (req, res, next) => {
+    console.log("hit get repo");
     try {
       const { owner, repo } = req.params;
-      const octokit = octokitMain(req.user.githubAccessToken);
-      const response = await octokit.request("GET /repos/:owner/:repo", {
-        owner,
-        repo,
-      });
-      const repoData = response.data;
+      console.log(repo, "IS THE REPO");
 
-      res.json({
-        repoData,
-      });
+      const cachedData = await Repo.findOne({ where: { repoName: repo } });
+
+      if (cachedData) {
+        const lastUpdated = new Date(cachedData.updatedAt);
+        if (Date.now() - lastUpdated < 3600000) {
+          res.json(cachedData.data);
+          return;
+        } else {
+          const octokit = octokitMain(req.user.githubAccessToken);
+          const response = await octokit.request("GET /repos/:owner/:repo", {
+            owner,
+            repo,
+          });
+          const repoData = response.data;
+
+          await cachedData.update({
+            repoName: repoData.name,
+            fullName: repoData.full_name,
+            repoUrl: repoData.html_url,
+            stargazers: repoData.stargazer_count,
+          });
+
+          res.json({
+            repoData,
+          });
+        }
+      } else {
+        console.log("create new row");
+        const octokit = octokitMain(req.user.githubAccessToken);
+        const response = await octokit.request("GET /repos/:owner/:repo", {
+          owner,
+          repo,
+        });
+        const repoData = response.data;
+        await Repo.create({
+          repoId: repoData.id,
+          repoName: repoData.name,
+          fullName: repoData.full_name,
+          repoUrl: repoData.html_url,
+          userId: repoData.owner.id,
+          stargazers: repoData.stargazer_count,
+        });
+        res.json({
+          repoData,
+        });
+      }
     } catch (error) {
-      console.log("Error in retrieving repo", error);
-      next(error);
+      console.error("Error in /getRepo:", error);
+      res.status(500).json({ error: "Internal Service Error" });
     }
   }
 );
@@ -56,13 +96,13 @@ router.get(
 
       res.json({
         repoDates: {
-          createdAt: repoData.created_at.split('T')[0],
-          updatedAt: repoData.updated_at.split('T')[0],
-          pushedAt: repoData.pushed_at.split('T')[0],
+          createdAt: repoData.created_at.split("T")[0],
+          updatedAt: repoData.updated_at.split("T")[0],
+          pushedAt: repoData.pushed_at.split("T")[0],
           createdTimeAgo: calcTimeAgo(new Date(repoData.created_at)),
           updatedTimeAgo: calcTimeAgo(new Date(repoData.updated_at)),
-          pushedTimeAgo: calcTimeAgo(new Date(repoData.pushed_at)),          
-        }
+          pushedTimeAgo: calcTimeAgo(new Date(repoData.pushed_at)),
+        },
       });
     } catch (error) {
       console.log("Error in retrieving repo", error);
@@ -134,113 +174,108 @@ router.get(
         });
       }
 
-      if(timePeriod === "month"){
+      if (timePeriod === "month") {
         const toDate = new Date();
         const fromDate = new Date();
-        fromDate.setDate(toDate.getDate()-7);
+        fromDate.setDate(toDate.getDate() - 7);
 
         const activitiesPerWeekObject = {
-          "0 weeks ago" : 0,
-          "1 weeks ago" : 0,
-          "2 weeks ago" : 0,
-          "3 weeks ago" : 0,
+          "0 weeks ago": 0,
+          "1 weeks ago": 0,
+          "2 weeks ago": 0,
+          "3 weeks ago": 0,
         };
         let weeksAgo = 0;
-      
-        while (weeksAgo <=  3){
-          repoActivityArray.map(activity => {
-              const activityDate = new Date(activity.activityTime);
-              if (activityDate <= toDate && activityDate >= fromDate){
-                activitiesPerWeekObject[`${weeksAgo} weeks ago`]++;
-              }
-          }) //end map
+
+        while (weeksAgo <= 3) {
+          repoActivityArray.map((activity) => {
+            const activityDate = new Date(activity.activityTime);
+            if (activityDate <= toDate && activityDate >= fromDate) {
+              activitiesPerWeekObject[`${weeksAgo} weeks ago`]++;
+            }
+          }); //end map
 
           weeksAgo++;
           toDate.setDate(toDate.getDate() - 7);
           fromDate.setDate(fromDate.getDate() - 7);
-        }  
+        }
 
         res.json({
           repoActivityArray,
-          activitiesTimelineChartObject :activitiesPerWeekObject,
+          activitiesTimelineChartObject: activitiesPerWeekObject,
         });
-      }
-
-      else if(timePeriod === "week"){
+      } else if (timePeriod === "week") {
         const toDate = new Date();
         const fromDate = new Date();
-        fromDate.setDate(toDate.getDate()-1);
+        fromDate.setDate(toDate.getDate() - 1);
 
         const activitiesPerDayObject = {
-          "0 days ago" : 0,
-          "1 days ago" : 0,
-          "2 days ago" : 0,
-          "3 days ago" : 0,
-          "4 days ago" : 0,
-          "5 days ago" : 0,
-          "6 days ago" : 0,
+          "0 days ago": 0,
+          "1 days ago": 0,
+          "2 days ago": 0,
+          "3 days ago": 0,
+          "4 days ago": 0,
+          "5 days ago": 0,
+          "6 days ago": 0,
         };
         let daysAgo = 0;
-    
-        while (daysAgo <=  6){
-          repoActivityArray.map(activity => {
-              const activityDate = new Date(activity.activityTime);
-              if (activityDate <= toDate && activityDate >= fromDate){
-                activitiesPerDayObject[`${daysAgo} days ago`]++;
-              }
-          }) //end map
-        
+
+        while (daysAgo <= 6) {
+          repoActivityArray.map((activity) => {
+            const activityDate = new Date(activity.activityTime);
+            if (activityDate <= toDate && activityDate >= fromDate) {
+              activitiesPerDayObject[`${daysAgo} days ago`]++;
+            }
+          }); //end map
+
           daysAgo++;
           toDate.setDate(toDate.getDate() - 1);
           fromDate.setDate(fromDate.getDate() - 1);
-        }  
+        }
 
         res.json({
           repoActivityArray,
           activitiesTimelineChartObject: activitiesPerDayObject,
-        });    
-      }  
-
-      else if(timePeriod === "year"){
+        });
+      } else if (timePeriod === "year") {
         const toDate = new Date();
         const fromDate = new Date();
-        fromDate.setDate(toDate.getDate()-30);
+        fromDate.setDate(toDate.getDate() - 30);
 
         const activitiesPerMonthObject = {
-          "0 months ago" : 0,
-          "1 months ago" : 0,
-          "2 months ago" : 0,
-          "3 months ago" : 0,
-          "4 months ago" : 0,
-          "5 months ago" : 0,
-          "6 months ago" : 0,
-          "7 months ago" : 0,
-          "8 months ago" : 0,
-          "9 months ago" : 0,
-          "10 months ago" : 0,
-          "11 months ago" : 0,
+          "0 months ago": 0,
+          "1 months ago": 0,
+          "2 months ago": 0,
+          "3 months ago": 0,
+          "4 months ago": 0,
+          "5 months ago": 0,
+          "6 months ago": 0,
+          "7 months ago": 0,
+          "8 months ago": 0,
+          "9 months ago": 0,
+          "10 months ago": 0,
+          "11 months ago": 0,
         };
         let monthsAgo = 0;
-    
-        while (monthsAgo <=  11){
-          repoActivityArray.map(activity => {
-              const activityDate = new Date(activity.activityTime);
-              if (activityDate <= toDate && activityDate >= fromDate){
-                activitiesPerMonthObject[`${monthsAgo} months ago`]++;
-              }
-          }) //end map
-        
+
+        while (monthsAgo <= 11) {
+          repoActivityArray.map((activity) => {
+            const activityDate = new Date(activity.activityTime);
+            if (activityDate <= toDate && activityDate >= fromDate) {
+              activitiesPerMonthObject[`${monthsAgo} months ago`]++;
+            }
+          }); //end map
+
           monthsAgo++;
           toDate.setDate(toDate.getDate() - 30);
           fromDate.setDate(fromDate.getDate() - 30);
-        }  
+        }
 
         res.json({
           repoActivityArray,
           activitiesTimelineChartObject: activitiesPerMonthObject,
-        });    
-      }  
-
+        });
+      }
     } catch (error) {
       console.log("Error in retrieving repo activity", error);
       next(error);
@@ -355,228 +390,244 @@ function getCodeAndComments(content) {
   };
 }
 
-router.get("/:owner/:repo/timeline/pastMonth",authenticateUser,async(req,res,next)=>{
-  try {
+router.get(
+  "/:owner/:repo/timeline/pastMonth",
+  authenticateUser,
+  async (req, res, next) => {
+    try {
       const { owner, repo } = req.params;
-      const octokit= octokitMain(req.user.githubAccessToken)
-      const responseAll = await octokit.paginate('GET /repos/:owner/:repo/issues?state=all', {
+      const octokit = octokitMain(req.user.githubAccessToken);
+      const responseAll = await octokit.paginate(
+        "GET /repos/:owner/:repo/issues?state=all",
+        {
           owner,
           repo,
           per_page: 100,
-      });
-      
+        }
+      );
+
       const toDate = new Date();
-      
+
       const issuesPerWeekObject = {
-          "0 weeks ago" : {},
-          "1 weeks ago" : {},
-          "2 weeks ago" : {},
-          "3 weeks ago" : {},
-          "4 weeks ago" : {},
+        "0 weeks ago": {},
+        "1 weeks ago": {},
+        "2 weeks ago": {},
+        "3 weeks ago": {},
+        "4 weeks ago": {},
       };
       let weeksAgo = 0;
-      
-      while (weeksAgo <=  4){
-          responseAll.map(issue => {
-              issueCreationDate = new Date(issue.created_at);
-              
-              if (issueCreationDate <= toDate){
-                  if (issue.state === "closed" && new Date (issue.closed_at) <= toDate ) {
-                      if ("closed" in issuesPerWeekObject[`${weeksAgo} weeks ago`]){
-                          issuesPerWeekObject[`${weeksAgo} weeks ago`].closed++;
-                      }
-                      else {
-                          issuesPerWeekObject[`${weeksAgo} weeks ago`].closed = 1;
-                      }
-                  }
-                  else{
-                      if ("open" in issuesPerWeekObject[`${weeksAgo} weeks ago`]){
-                          issuesPerWeekObject[`${weeksAgo} weeks ago`].open++;
-                      }
-                      else {
-                          issuesPerWeekObject[`${weeksAgo} weeks ago`].open = 1;
-                      }
-                  }
+
+      while (weeksAgo <= 4) {
+        responseAll.map((issue) => {
+          issueCreationDate = new Date(issue.created_at);
+
+          if (issueCreationDate <= toDate) {
+            if (
+              issue.state === "closed" &&
+              new Date(issue.closed_at) <= toDate
+            ) {
+              if ("closed" in issuesPerWeekObject[`${weeksAgo} weeks ago`]) {
+                issuesPerWeekObject[`${weeksAgo} weeks ago`].closed++;
+              } else {
+                issuesPerWeekObject[`${weeksAgo} weeks ago`].closed = 1;
               }
-              
-          }) //end map
-          issuesPerWeekObject[`${weeksAgo} weeks ago`].all = 
-          (issuesPerWeekObject[`${weeksAgo} weeks ago`].closed || 0) + 
+            } else {
+              if ("open" in issuesPerWeekObject[`${weeksAgo} weeks ago`]) {
+                issuesPerWeekObject[`${weeksAgo} weeks ago`].open++;
+              } else {
+                issuesPerWeekObject[`${weeksAgo} weeks ago`].open = 1;
+              }
+            }
+          }
+        }); //end map
+        issuesPerWeekObject[`${weeksAgo} weeks ago`].all =
+          (issuesPerWeekObject[`${weeksAgo} weeks ago`].closed || 0) +
           (issuesPerWeekObject[`${weeksAgo} weeks ago`].open || 0);
-          
-          !issuesPerWeekObject[`${weeksAgo} weeks ago`].closed 
-          ? issuesPerWeekObject[`${weeksAgo} weeks ago`].closed = 0 
-          : null
-          
-          !issuesPerWeekObject[`${weeksAgo} weeks ago`].open 
-          ? issuesPerWeekObject[`${weeksAgo} weeks ago`].open = 0 
-          : null
-          
-          weeksAgo++;
-          toDate.setDate(toDate.getDate() - 7);
+
+        !issuesPerWeekObject[`${weeksAgo} weeks ago`].closed
+          ? (issuesPerWeekObject[`${weeksAgo} weeks ago`].closed = 0)
+          : null;
+
+        !issuesPerWeekObject[`${weeksAgo} weeks ago`].open
+          ? (issuesPerWeekObject[`${weeksAgo} weeks ago`].open = 0)
+          : null;
+
+        weeksAgo++;
+        toDate.setDate(toDate.getDate() - 7);
       }
-      
+
       res.json(issuesPerWeekObject);
-  } catch (error) {
-      console.log("Error in retrieving issue timeline",error)
+    } catch (error) {
+      console.log("Error in retrieving issue timeline", error);
       next(error);
+    }
   }
-})
-                      
+);
+
 //get timesline of issues (open/closed/all) over the past year
-router.get("/:owner/:repo/timeline/pastYear",authenticateUser,async(req,res,next)=>{
-                          console.log("hit");
-                          try {
-                              const { owner, repo } = req.params;
-                              const octokit= octokitMain(req.user.githubAccessToken)
-                              const responseAll = await octokit.paginate('GET /repos/:owner/:repo/issues?state=all', {
-                                  owner,
-                                  repo,
-                                  per_page: 100,
-                              });
-                              
-                              const toDate = new Date();
-                              
-                              const issuesPerMonthObject = {
-                                  "0 months ago" : {},
-                                  "1 months ago" : {},
-                                  "2 months ago" : {},
-                                  "3 months ago" : {},
-                                  "4 months ago" : {},
-                                  "5 months ago" : {},
-                                  "6 months ago" : {},
-                                  "7 months ago" : {},
-          "8 months ago" : {},
-          "9 months ago" : {},
-          "10 months ago" : {},
-          "11 months ago" : {},
-          "12 months ago" : {},
+router.get(
+  "/:owner/:repo/timeline/pastYear",
+  authenticateUser,
+  async (req, res, next) => {
+    console.log("hit");
+    try {
+      const { owner, repo } = req.params;
+      const octokit = octokitMain(req.user.githubAccessToken);
+      const responseAll = await octokit.paginate(
+        "GET /repos/:owner/:repo/issues?state=all",
+        {
+          owner,
+          repo,
+          per_page: 100,
+        }
+      );
+
+      const toDate = new Date();
+
+      const issuesPerMonthObject = {
+        "0 months ago": {},
+        "1 months ago": {},
+        "2 months ago": {},
+        "3 months ago": {},
+        "4 months ago": {},
+        "5 months ago": {},
+        "6 months ago": {},
+        "7 months ago": {},
+        "8 months ago": {},
+        "9 months ago": {},
+        "10 months ago": {},
+        "11 months ago": {},
+        "12 months ago": {},
       };
       let monthsAgo = 0;
 
-      while (monthsAgo <=  12){
-          responseAll.map(issue => {
-              issueCreationDate = new Date(issue.created_at);
-      
-              if (issueCreationDate <= toDate){
-                  if (issue.state === "closed" && new Date (issue.closed_at) <= toDate ) {
-                      if ("closed" in issuesPerMonthObject[`${monthsAgo} months ago`]){
-                          issuesPerMonthObject[`${monthsAgo} months ago`].closed++;
-                      }
-                      else {
-                          issuesPerMonthObject[`${monthsAgo} months ago`].closed = 1;
-                      }
-                  }
-                  else{
-                      if ("open" in issuesPerMonthObject[`${monthsAgo} months ago`]){
-                          issuesPerMonthObject[`${monthsAgo} months ago`].open++;
-                      }
-                      else {
-                          issuesPerMonthObject[`${monthsAgo} months ago`].open = 1;
-                      }
-                  }
+      while (monthsAgo <= 12) {
+        responseAll.map((issue) => {
+          issueCreationDate = new Date(issue.created_at);
+
+          if (issueCreationDate <= toDate) {
+            if (
+              issue.state === "closed" &&
+              new Date(issue.closed_at) <= toDate
+            ) {
+              if ("closed" in issuesPerMonthObject[`${monthsAgo} months ago`]) {
+                issuesPerMonthObject[`${monthsAgo} months ago`].closed++;
+              } else {
+                issuesPerMonthObject[`${monthsAgo} months ago`].closed = 1;
               }
+            } else {
+              if ("open" in issuesPerMonthObject[`${monthsAgo} months ago`]) {
+                issuesPerMonthObject[`${monthsAgo} months ago`].open++;
+              } else {
+                issuesPerMonthObject[`${monthsAgo} months ago`].open = 1;
+              }
+            }
+          }
+        }); //end map
 
-          }) //end map
+        issuesPerMonthObject[`${monthsAgo} months ago`].all =
+          (issuesPerMonthObject[`${monthsAgo} months ago`].closed || 0) +
+          (issuesPerMonthObject[`${monthsAgo} months ago`].open || 0);
 
-          issuesPerMonthObject[`${monthsAgo} months ago`].all = 
-          (issuesPerMonthObject[`${monthsAgo} months ago`].closed || 0)
-          + (issuesPerMonthObject[`${monthsAgo} months ago`].open || 0);
+        !issuesPerMonthObject[`${monthsAgo} months ago`].closed
+          ? (issuesPerMonthObject[`${monthsAgo} months ago`].closed = 0)
+          : null;
 
-          !issuesPerMonthObject[`${monthsAgo} months ago`].closed 
-          ? issuesPerMonthObject[`${monthsAgo} months ago`].closed = 0 
-          : null
+        !issuesPerMonthObject[`${monthsAgo} months ago`].open
+          ? (issuesPerMonthObject[`${monthsAgo} months ago`].open = 0)
+          : null;
 
-          !issuesPerMonthObject[`${monthsAgo} months ago`].open 
-          ? issuesPerMonthObject[`${monthsAgo} months ago`].open = 0 
-          : null
-
-          monthsAgo++;
-          toDate.setDate(toDate.getDate() - 30);
+        monthsAgo++;
+        toDate.setDate(toDate.getDate() - 30);
       }
-      
-      res.json(issuesPerMonthObject);
 
-  } catch (error) {
-      console.log("Error in retrieving issue timeline",error)
+      res.json(issuesPerMonthObject);
+    } catch (error) {
+      console.log("Error in retrieving issue timeline", error);
       next(error);
+    }
   }
-})
+);
 
 //get timeline of issues (open/closed/all) of issues over past week
-router.get("/:owner/:repo/timeline/pastWeek",authenticateUser,async(req,res,next)=>{
-  try {
+router.get(
+  "/:owner/:repo/timeline/pastWeek",
+  authenticateUser,
+  async (req, res, next) => {
+    try {
       const { owner, repo } = req.params;
-      const octokit =  octokitMain(req.user.githubAccessToken)
-      const responseAll = await octokit.paginate('GET /repos/:owner/:repo/issues?state=all', {
+      const octokit = octokitMain(req.user.githubAccessToken);
+      const responseAll = await octokit.paginate(
+        "GET /repos/:owner/:repo/issues?state=all",
+        {
           owner,
           repo,
           per_page: 100,
-      });
+        }
+      );
 
       const toDate = new Date();
       console.log(toDate);
 
       const issuesPerDayObject = {
-          "0 days ago" : {},
-          "1 days ago" : {},
-          "2 days ago" : {},
-          "3 days ago" : {},
-          "4 days ago" : {},
-          "5 days ago" : {},
-          "6 days ago" : {},
-          "7 days ago" : {},
+        "0 days ago": {},
+        "1 days ago": {},
+        "2 days ago": {},
+        "3 days ago": {},
+        "4 days ago": {},
+        "5 days ago": {},
+        "6 days ago": {},
+        "7 days ago": {},
       };
 
       let daysAgo = 0;
 
-      while (daysAgo <=  7){
-          responseAll.map(issue => {
-              issueCreationDate = new Date(issue.created_at);
-      
-              if (issueCreationDate <= toDate){
-                  if (issue.state === "closed" && new Date (issue.closed_at) <= toDate ) {
-                      if ("closed" in issuesPerDayObject[`${daysAgo} days ago`]){
-                          issuesPerDayObject[`${daysAgo} days ago`].closed++;
-                      }
-                      else {
-                          issuesPerDayObject[`${daysAgo} days ago`].closed = 1;
-                      }
-                  }
-                  else{
-                      if ("open" in issuesPerDayObject[`${daysAgo} days ago`]){
-                          issuesPerDayObject[`${daysAgo} days ago`].open++;
-                      }
-                      else {
-                          issuesPerDayObject[`${daysAgo} days ago`].open = 1;
-                      }
-                  }
-              }
+      while (daysAgo <= 7) {
+        responseAll.map((issue) => {
+          issueCreationDate = new Date(issue.created_at);
 
-          }) //end map
-          issuesPerDayObject[`${daysAgo} days ago`].all = 
-          (issuesPerDayObject[`${daysAgo} days ago`].closed || 0) + 
+          if (issueCreationDate <= toDate) {
+            if (
+              issue.state === "closed" &&
+              new Date(issue.closed_at) <= toDate
+            ) {
+              if ("closed" in issuesPerDayObject[`${daysAgo} days ago`]) {
+                issuesPerDayObject[`${daysAgo} days ago`].closed++;
+              } else {
+                issuesPerDayObject[`${daysAgo} days ago`].closed = 1;
+              }
+            } else {
+              if ("open" in issuesPerDayObject[`${daysAgo} days ago`]) {
+                issuesPerDayObject[`${daysAgo} days ago`].open++;
+              } else {
+                issuesPerDayObject[`${daysAgo} days ago`].open = 1;
+              }
+            }
+          }
+        }); //end map
+        issuesPerDayObject[`${daysAgo} days ago`].all =
+          (issuesPerDayObject[`${daysAgo} days ago`].closed || 0) +
           (issuesPerDayObject[`${daysAgo} days ago`].open || 0);
 
-          !issuesPerDayObject[`${daysAgo} days ago`].closed 
-          ? issuesPerDayObject[`${daysAgo} days ago`].closed = 0 
-          : null
+        !issuesPerDayObject[`${daysAgo} days ago`].closed
+          ? (issuesPerDayObject[`${daysAgo} days ago`].closed = 0)
+          : null;
 
-          !issuesPerDayObject[`${daysAgo} days ago`].open 
-          ? issuesPerDayObject[`${daysAgo} days ago`].open = 0 
-          : null
+        !issuesPerDayObject[`${daysAgo} days ago`].open
+          ? (issuesPerDayObject[`${daysAgo} days ago`].open = 0)
+          : null;
 
-          daysAgo++;
-          toDate.setDate(toDate.getDate() - 1);
-          console.log(toDate);
+        daysAgo++;
+        toDate.setDate(toDate.getDate() - 1);
+        console.log(toDate);
       }
-      
-      res.json(issuesPerDayObject);
 
-  } catch (error) {
-      console.log("Error in average route",error)
+      res.json(issuesPerDayObject);
+    } catch (error) {
+      console.log("Error in average route", error);
       next(error);
+    }
   }
-})
+);
 
 module.exports = router;
