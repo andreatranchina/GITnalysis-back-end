@@ -3,6 +3,7 @@ const octokitMain = require("../services/octokit");
 const authenticateUser = require("../middleware/auth");
 const { calcTimeAgo } = require("../services/helperFunctions");
 const { Repo } = require("../db/models");
+const { User } = require("../db/models");
 
 // mounted on : http://localhost:8080/api/repos
 
@@ -15,13 +16,16 @@ router.get(
     try {
       const { owner, repo } = req.params;
       console.log(repo, "IS THE REPO");
+      console.log(owner); //105296511
 
       const cachedData = await Repo.findOne({ where: { repoName: repo } });
-
+      console.log("tried to access cachedData");
       if (cachedData) {
+        console.log("CACHED DATA");
         const lastUpdated = new Date(cachedData.updatedAt);
         if (Date.now() - lastUpdated < 3600000) {
-          res.json(cachedData.data);
+          res.json(cachedData);
+          console.log(cachedData);
           return;
         } else {
           const octokit = octokitMain(req.user.githubAccessToken);
@@ -30,6 +34,7 @@ router.get(
             repo,
           });
           const repoData = response.data;
+          console.log(repoData, "LOOKING FOR REPO DATA");
 
           await cachedData.update({
             repoName: repoData.name,
@@ -50,6 +55,17 @@ router.get(
           repo,
         });
         const repoData = response.data;
+        console.log(repoData, "NEW DATA");
+        const cachedUser = await User.findOne({
+          where: { githubID: repoData.owner.id },
+        });
+        if (!cachedUser) {
+          await User.create({
+            githubID: repoData.owner.id,
+            username: repoData.owner.login,
+            profilePhoto: repoData.owner.avatar_url,
+          });
+        }
         await Repo.create({
           repoId: repoData.id,
           repoName: repoData.name,

@@ -17,18 +17,7 @@ const seedRepos = [
     repoName: "gitnalysis_be",
     fullName: "johnsmith104/gitnalysis_be",
     repoUrl: "https://api.github.com/users/andreatranchina",
-    forks: {},
     userId: "91538619",
-    issueTimeline: {},
-    commitsTimeline: {},
-    numCommits: 120,
-    leadTimeChange: {},
-    pullRequests: {},
-    openIssues: 6,
-    closedIssues: 100,
-    changeFailureRate: {},
-    deployments: {},
-    stargazers: {},
   },
 ];
 
@@ -48,10 +37,6 @@ const seed = async () => {
     await User.bulkCreate(seedUsers);
     await Repo.bulkCreate(seedRepos);
     await Branch.bulkCreate(seedBranches);
-    // await Livestream.bulkCreate(seedLivestreams);
-    // await Videochat.bulkCreate(seedVideochats);
-    // await Message.bulkCreate(seedMessages);
-    // await Follow.bulkCreate(seedFollows);
 
     console.log("Seeding completed successfully.");
   } catch (error) {

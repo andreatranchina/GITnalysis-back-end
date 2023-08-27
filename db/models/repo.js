@@ -21,57 +21,12 @@ const Repo = db.define("Repo", {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  forks: {
-    type: DataTypes.JSON,
-    allowNull: true,
-  },
   userId: {
     type: DataTypes.INTEGER,
     references: {
       model: User,
       key: "githubID",
     },
-    allowNull: false,
-  },
-  issueTimeline: {
-    type: DataTypes.JSON,
-    allowNull: true,
-  },
-  commitsTimeline: {
-    type: DataTypes.JSON,
-    allowNull: true,
-  },
-  numCommits: {
-    type: DataTypes.INTEGER,
-    allowNull: true,
-  },
-  leadTimeChange: {
-    type: DataTypes.JSON,
-    allowNull: true,
-  },
-  pullRequests: {
-    type: DataTypes.JSON,
-    allowNull: true,
-  },
-  openIssues: {
-    type: DataTypes.INTEGER,
-    allowNull: true,
-  },
-  closedIssues: {
-    type: DataTypes.INTEGER,
-    allowNull: true,
-  },
-  changeFailureRate: {
-    type: DataTypes.JSON,
-    allowNull: true,
-  },
-  deployments: {
-    type: DataTypes.JSON,
-    allowNull: true,
-  },
-  stargazers: {
-    type: DataTypes.JSON,
-    allowNull: true,
   },
 });
 
