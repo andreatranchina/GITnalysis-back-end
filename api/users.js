@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const octokitMain = require("../services/octokit");
 const autheticateUser = require("../middleware/auth");
-const User = require("../db/models");
+const { User } = require("../db/models");
 
 // mounted on: http://localhost:8080/api/users
 
@@ -210,9 +210,10 @@ router.get("/:username/repos", autheticateUser, async (req, res, next) => {
 
 //get number of users signed up to our website
 router.get("/getWebsiteUsers/getNum", async (req, res, next) => {
+  console.log("hit website users");
   try {
     const allUsers = await User.findAll();
-
+    console.log(allUsers, "allUsers");
     res.json({ numUsers: allUsers.length });
   } catch (error) {
     console.log(error.message);
