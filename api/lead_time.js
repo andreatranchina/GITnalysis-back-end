@@ -12,9 +12,9 @@ router.get("/:owner/:repo",authenticate,async(req,res,next)=>{
         const response = await octokit.paginate('GET /repos/:owner/:repo/pulls?state=closed', {
             owner,
             repo,
-            per_page: 100
+                        per_page: 100
         });
-        const closed_PRs=response;
+const closed_PRs=response;
         let time_taken=closed_PRs.map((item)=>{
             //if the PR was resolved by a merge request
             if (item.merged_at){
@@ -23,7 +23,7 @@ router.get("/:owner/:repo",authenticate,async(req,res,next)=>{
                 const time_taken=merged_at-created_date;
                 return time_taken
             }
-            return 0
+        return 0
         })
         //filtering out the times for PRs that were not closed via merge
         time_taken=time_taken.filter((item)=>item!==0)
@@ -32,8 +32,8 @@ router.get("/:owner/:repo",authenticate,async(req,res,next)=>{
         },0)
         
         const average=formatMilliseconds(sum/time_taken.length);
-        res.json({average_lead_time:average});
-    } catch (error) {
+            res.json({average_lead_time:average});
+            } catch (error) {
         console.log("Error in lead_time route",error)
         next(error);
     }
@@ -54,7 +54,7 @@ router.get("/running_average/:owner/:repo",authenticate,async(req,res,next)=>{
         let sum=0
         const running_average=[];
         let count=1
-        for (let i=0;i<closed_PRs.length;i++){
+        for (let i = closed_PRs.length - 1; i >= 0; i--) { // Fix the loop condition
             let item=closed_PRs[i];
             if (item.merged_at){
                 const created_date=new Date(item.created_at)
@@ -66,67 +66,12 @@ router.get("/running_average/:owner/:repo",authenticate,async(req,res,next)=>{
                 count++
             }
         }
-        res.json(running_average)
+        res.json(running_average.reverse())
     } catch (error) {
         console.log("Error in lead_time/running_average route",error)
         next(error);
     }
 })
-    
-
-// router.get("/running_average/:owner/:repo",async(req,res,next)=>{
-//     try {
-//         const owner = req.params.owner;
-//         const repo = req.params.repo;
-//         const octokit= octokitMain()
-//         const response = await octokit.request('GET /repos/:owner/:repo/pulls?state=closed', {
-//             owner,
-//             repo
-//         });
-//         const closed_PRs=response.data
-//         // let time_taken=closed_PRs.map((item)=>{
-//         //     //if the PR was resolved by a merge request
-//         //     if (item.merged_at){
-//         //         const created_date=new Date(item.created_at)
-//         //         const merged_at= new Date(item.merged_at)
-//         //         const time_taken=merged_at-created_date;
-//         //         return {merged_at,time_taken}
-//         //     }
-//         //     return 0
-//         // })
-//         let sum=0
-//         const running_average=[];
-//         let count=1
-//         for (let i=0;i<closed_PRs.length;i++){
-//             let item=closed_PRs[i];
-//             if (item.merged_at){
-//                 const created_date=new Date(item.created_at)
-//                 const merged_at= new Date(item.merged_at)
-//                 const time_taken=merged_at-created_date;
-//                 sum+=time_taken;
-//                 const average= formatMilliseconds(sum/(count))
-//                 running_average.push({merged_at,average})
-//                 count++
-//             }
-//         }
-
-//         //filtering out the times for PRs that were not closed via merge
-//         // time_taken=time_taken.filter((item)=>item!==0)
-        
-//         // const sum=time_taken.reduce((item,acc)=>{
-//         //     return acc+item
-//         // },0)
-        
-//         // const average=formatMilliseconds(sum/time_taken.length);
-//         // res.json({average_lead_time:average});
-//         res.json(running_average)
-//     } catch (error) {
-//         console.log("Error in lead_time route",error)
-//         next(error);
-//     }
-    
-// })
-
 
 function formatMilliseconds(milliseconds) {
     const millisecondsPerSecond = 1000;
