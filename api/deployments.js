@@ -189,4 +189,46 @@ async function calculateCFR(owner, repo,accesstoken) {
   }
 });
 
+router.get("/:owner/:repo/mttr", autheticateUser, async (req, res) => {
+  try {
+    const octokit =  octokitMain(req.user.githubAccessToken)
+    const response = await octokit.paginate("GET /repos/:owner/:repo/deployments",
+      {
+        owner,
+        repo,
+        per_page: 100,
+      });
+    const deployments = response;
+
+    let totalRestoreTime = 0;
+    let failureCount = 0;
+
+
+    for(let i = 0; i < deployments.data.length - 1; i++){
+      const deployment = deployments.data[i];
+      const nextDeployment = deployments.data[i + 1];
+
+      // Assuming statuses are either "failure" or "success"
+      if (deployment.status === "failure" && nextDeployment.status === "success") {
+        const failedAt = new Date(deployment.created_at).getTime();
+        const restoredAt = new Date(nextDeployment.created_at).getTime();
+        
+        const restoreTime = restoredAt - failedAt;
+        totalRestoreTime += restoreTime;
+        failureCount++;
+      }
+
+    }
+    const mttr = totalRestoreTime/failureCount
+
+    // convert mttr time into hours
+    res.json({mttr: mttr/(1000 * 60 * 60)})
+  
+  } catch (error) {
+    console.error("Error calculating MTTR for deployments:", error);
+  }
+})
+
+
+
 module.exports = router;
