@@ -192,10 +192,13 @@ router.get("/:owner/:repo/cfr", autheticateUser, async (req, res) => {
   }
 });
 
+// Define a route to calculate MTTR for a given repository
 router.get("/:owner/:repo/mttr", autheticateUser, async (req, res) => {
   try {
     const octokit = octokitMain(req.user.githubAccessToken);
     const { owner, repo } = req.params;
+
+    // Fetch deployment statuses for the specified repository
     const response = await octokit.repos.listDeploymentStatuses(
       "GET /repos/:owner/:repo/deployments",
       {
@@ -205,22 +208,24 @@ router.get("/:owner/:repo/mttr", autheticateUser, async (req, res) => {
       }
     );
     const deployments = response;
-    console.log(Array.isArray(deployments.data));
 
+    // Return an error if no deployments are found
     if (!deployments || !deployments.data) {
       return res.status(404).send("No deployments found for the repository.");
     }
+
+    // Sort deployments by creation date
     deployments.data.sort((a, b) => {
       return (
         new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
       );
     });
-    // console.log("first ele",deployments.data[0])
-    // console.log(deployments.data)
 
+    // Initialize arrays to store MTTR data and all statuses
     const mttrData = [];
     const allStatuses = [];
 
+    // Iterate through each deployment to fetch and sort its statuses
     for (let deployment of deployments.data) {
       const { statuses_url } = deployment;
 
@@ -229,30 +234,27 @@ router.get("/:owner/:repo/mttr", autheticateUser, async (req, res) => {
         method: "GET",
       });
 
-      const statuses = statusesResponse.data;
-      //   statuses.sort((a, b) => {
-      //     return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-      // });
-      // console.log(statuses)
-      const sortedStatuses = [...statuses].sort((a, b) => {
+      // Sort statuses by creation date
+      const sortedStatuses = [...statusesResponse.data].sort((a, b) => {
         return (
           new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
         );
       });
+
+      // Add sorted statuses to the array all statuses
       allStatuses.push(...sortedStatuses);
+
       console.log("status", sortedStatuses);
-      // console.log("Sorted Statuses:", sortedStatuses.length);
     }
 
-    // console.log("statues", statuses)
-
-    // Loop through statuses to determine failures and restoration
+    // Loop through all statuses to detect failures and subsequent recoveries
     for (let i = 0; i < allStatuses.length - 1; i++) {
-      const currentStatus = allStatuses[i].state; // Assuming 'state' is the field in the status object
+      const currentStatus = allStatuses[i].state;
       console.log("curr Status", currentStatus);
       const nextStatus = allStatuses[i + 1].state;
       console.log("next Status", nextStatus);
 
+      // If a failure is followed by a success, calculate the time difference
       if (currentStatus === "failure" && nextStatus === "success") {
         const failedAt = new Date(allStatuses[i].created_at).getTime();
         const restoredAt = new Date(allStatuses[i + 1].created_at).getTime();
@@ -262,23 +264,25 @@ router.get("/:owner/:repo/mttr", autheticateUser, async (req, res) => {
       }
     }
 
-    // Calculate MTTR
+    // Calculate the average recovery time from all recovery periods
     const totalRestoreTime = mttrData.reduce((acc, time) => acc + time, 0);
-
     console.log(mttrData.length);
 
+    // Handle the scenario when no recoveries are found
     if (mttrData.length === 0) {
       return res.status(400).send("No recoveries found to calculate MTTR.");
     }
-    const mttr = totalRestoreTime / mttrData.length;
 
+    // Calculate MTTR
+    const mttr = totalRestoreTime / mttrData.length;
     console.log(mttr);
 
-    // convert mttr time into hours
+    // Return MTTR value in hours
     res.json({ mttr: mttr / (1000 * 60 * 60) });
   } catch (error) {
     console.error("Error calculating MTTR for deployments:", error);
   }
 });
+
 
 module.exports = router;
