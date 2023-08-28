@@ -143,7 +143,7 @@ async function calculateCFR(owner, repo, accesstoken) {
 
     // iterate through deployments and get their statuses
     for (const deployment of deployments) {
-      const octokit = octokitMain(req.user.githubAccessToken);
+      const octokit = octokitMain(accesstoken);
       const deploymentStatuses = await octokit.repos.listDeploymentStatuses({
         owner: owner,
         repo: repo,
