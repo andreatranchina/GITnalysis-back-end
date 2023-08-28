@@ -185,7 +185,7 @@ router.get("/:owner/:repo/cfr", autheticateUser, async (req, res) => {
 
   try {
     const cfr = await calculateCFR(owner, repo, req.user.githubAccessToken);
-    res.json({ cfr: cfr + "%" });
+    res.json(cfr)
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred while calculating CFR." });
