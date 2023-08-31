@@ -244,15 +244,15 @@ router.get("/:owner/:repo/mttr", autheticateUser, async (req, res) => {
       // Add sorted statuses to the array all statuses
       allStatuses.push(...sortedStatuses);
 
-      console.log("status", sortedStatuses);
+      // console.log("status", sortedStatuses);
     }
 
     // Loop through all statuses to detect failures and subsequent recoveries
     for (let i = 0; i < allStatuses.length - 1; i++) {
       const currentStatus = allStatuses[i].state;
-      console.log("curr Status", currentStatus);
+      // console.log("curr Status", currentStatus);
       const nextStatus = allStatuses[i + 1].state;
-      console.log("next Status", nextStatus);
+      // console.log("next Status", nextStatus);
 
       // If a failure is followed by a success, calculate the time difference
       if (currentStatus === "failure" && nextStatus === "success") {
@@ -278,7 +278,7 @@ router.get("/:owner/:repo/mttr", autheticateUser, async (req, res) => {
     console.log(mttr);
 
     // Return MTTR value in hours
-    res.json({ mttr: mttr / (1000 * 60 * 60) });
+    res.json({ mttr: parseFloat((mttr / (1000 * 60 * 60)).toFixed(2)) });
   } catch (error) {
     console.error("Error calculating MTTR for deployments:", error);
   }
