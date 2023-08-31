@@ -1,61 +1,66 @@
-const router=require("express").Router();
+const router = require("express").Router();
 const octokitMain = require("../services/octokit");
-const autheticateUser= require("../middleware/auth")
+const autheticateUser = require("../middleware/auth");
 
 // mounted on: http://localhost:8080/api/collaborators"
 
-// 
+//
 //get all collaborators for a given repo
-router.get("/:owner/:repo",autheticateUser,async(req,res,next)=>{
-    try {
-        //we still want the frontend to send the owner and the repo
-        const owner=req.params.owner
-        const repo=req.params.repo
+router.get("/:owner/:repo", autheticateUser, async (req, res, next) => {
+  try {
+    //we still want the frontend to send the owner and the repo
+    const owner = req.params.owner;
+    const repo = req.params.repo;
 
-        //extracting the accesstoken from the req and setting up the octokit header
-        const octokit =  octokitMain(req.user.githubAccessToken)
-        
-       
-        const response = await octokit.request('GET /repos/:owner/:repo/collaborators', {
-            owner,
-            repo
-        });
-        const collaborators=response.data
-        
-        res.json({
-            collaborators
-        });
-    } catch (error) {
-        console.log("Error in retrieving collaborators",error)
-        next(error);
-    }
-})
+    //extracting the accesstoken from the req and setting up the octokit header
+    const octokit = octokitMain(req.user.githubAccessToken);
+
+    const response = await octokit.request(
+      "GET /repos/:owner/:repo/collaborators",
+      {
+        owner,
+        repo,
+      }
+    );
+    const collaborators = response.data;
+
+    res.json({
+      collaborators,
+    });
+  } catch (error) {
+    console.log("Error in retrieving collaborators", error);
+    next(error);
+  }
+});
 
 //get number of collaborators for a give repo
-router.get("/count/:owner/:repo",autheticateUser,async(req,res,next)=>{
-    try {
-        const owner = req.params.owner;
-        const repo = req.params.repo;
-        
-        const octokit =  octokitMain(req.user.githubAccessToken)
+router.get("/count/:owner/:repo", autheticateUser, async (req, res, next) => {
+  try {
+    const owner = req.params.owner;
+    const repo = req.params.repo;
 
-        const response = await octokit.request('GET /repos/:owner/:repo/collaborators', {
-            owner,
-            repo
-        });
-        
-        const collaborators=response.data
+    const octokit = octokitMain(req.user.githubAccessToken);
 
-        const numCollaborators = response.data.length
-        
-        res.json({
-            numCollaborators
-        });
-    } catch (error) {
-        console.log("Error in retrieving num of collaborators",error)
-        next(error);
-    }
-})
+    const response = await octokit.request(
+      "GET /repos/:owner/:repo/collaborators",
+      {
+        owner,
+        repo,
+      }
+    );
+
+    const collaborators = response.data;
+
+    const numCollaborators = response.data.length;
+
+    res.json({
+      numCollaborators,
+    });
+  } catch (error) {
+    console.log("Error in retrieving num of collaborators", error);
+    next(error);
+  }
+});
 
 // router.post("/:owner/:repo",async(req,res,next)=>{
 //     try {
@@ -72,7 +77,7 @@ router.get("/count/:owner/:repo",autheticateUser,async(req,res,next)=>{
 //             username,
 //             permission: "admin",
 //         });
-        
+
 //         res.json(response.data);
 //     } catch (error) {
 //         console.log("Error in average route",error)
@@ -93,7 +98,7 @@ router.get("/count/:owner/:repo",autheticateUser,async(req,res,next)=>{
 //             username,
 
 //         });
-        
+
 //         res.json(response.data);
 //     } catch (error) {
 //         console.log("Error in average route",error)
@@ -101,4 +106,4 @@ router.get("/count/:owner/:repo",autheticateUser,async(req,res,next)=>{
 //     }
 // })
 
-module.exports=router
+module.exports = router;
