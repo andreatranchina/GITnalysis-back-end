@@ -14,10 +14,10 @@ const seedUsers = [
 const seedRepos = [
   {
     repoId: 676340448,
-    repoName: "gitnalysis_be",
-    fullName: "johnsmith104/gitnalysis_be",
-    repoUrl: "https://api.github.com/users/andreatranchina",
-    userId: "91538619",
+    name: "gitnalysis_be",
+    full_name: "johnsmith104/gitnalysis_be",
+    url: "https://api.github.com/users/andreatranchina",
+    id: "91538619", //user id
   },
 ];
 

@@ -9,19 +9,19 @@ const Repo = db.define("Repo", {
     allowNull: false,
     unique: true,
   },
-  repoName: {
+  name: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  fullName: {
+  full_name: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  repoUrl: {
+  url: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  userId: {
+  id: {
     type: DataTypes.INTEGER,
     references: {
       model: User,

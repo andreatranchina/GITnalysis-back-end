@@ -37,12 +37,12 @@ router.get(
           console.log(repoData, "LOOKING FOR REPO DATA");
 
           await cachedData.update({
-            repoName: repoData.name,
-            fullName: repoData.full_name,
-            repoUrl: repoData.html_url,
+            name: repoData.name,
+            full_name: repoData.full_name,
+            url: repoData.html_url,
             stargazers: repoData.stargazer_count,
           });
-
+          console.log(cachedData);
           res.json({
             repoData,
           });
@@ -68,10 +68,10 @@ router.get(
         }
         await Repo.create({
           repoId: repoData.id,
-          repoName: repoData.name,
-          fullName: repoData.full_name,
-          repoUrl: repoData.html_url,
-          userId: repoData.owner.id,
+          name: repoData.name,
+          full_name: repoData.full_name,
+          url: repoData.html_url,
+          id: repoData.owner.id,
           stargazers: repoData.stargazer_count,
         });
         res.json({
