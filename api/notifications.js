@@ -44,7 +44,6 @@ router.get("/:page",authenticateUser,async(req,res,next)=>{
             per_page: 30,
             all: true,
             since: oneWeekAgoISO
-
         });
 
         const responseArray = [];
