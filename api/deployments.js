@@ -129,12 +129,11 @@ router.get(
 async function calculateCFR(owner, repo, accesstoken) {
   try {
     const octokit = octokitMain(accesstoken);
-    const deploymentsResponse = await octokit.paginate(
+    const deploymentsResponse = await octokit(
       "GET /repos/:owner/:repo/deployments",
       {
         owner,
         repo,
-        per_page: 100,
       }
     );
     const deployments = deploymentsResponse;
@@ -185,7 +184,7 @@ router.get("/:owner/:repo/cfr", autheticateUser, async (req, res) => {
 
   try {
     const cfr = await calculateCFR(owner, repo, req.user.githubAccessToken);
-    res.json(cfr)
+    res.json(cfr);
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "An error occurred while calculating CFR." });
@@ -283,6 +282,5 @@ router.get("/:owner/:repo/mttr", autheticateUser, async (req, res) => {
     console.error("Error calculating MTTR for deployments:", error);
   }
 });
-
 
 module.exports = router;
