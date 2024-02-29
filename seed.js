@@ -17,7 +17,7 @@ const seedRepos = [
     name: "gitnalysis_be",
     full_name: "johnsmith104/gitnalysis_be",
     url: "https://api.github.com/users/andreatranchina",
-    githubId: "91538619", //user id
+    id: "91538619", //user id
   },
 ];
 
@@ -37,6 +37,7 @@ const seed = async () => {
     await User.bulkCreate(seedUsers);
     await Repo.bulkCreate(seedRepos);
     await Branch.bulkCreate(seedBranches);
+
     console.log("Seeding completed successfully.");
   } catch (error) {
     console.error("Seeding error:", error);
