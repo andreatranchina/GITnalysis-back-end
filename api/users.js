@@ -1,14 +1,14 @@
 const router = require("express").Router();
 const octokitMain = require("../services/octokit");
-const autheticateUser = require("../middleware/auth");
+const authenticateUser = require("../middleware/auth");
 const { User } = require("../db/models");
 
 // mounted on: http://localhost:8080/api/users
 
 //get authenticated user
-router.get("/me", autheticateUser, async (req, res, next) => {
+router.get("/me", authenticateUser, async (req, res, next) => {
   try {
-    // console.log("hit auth me");
+    console.log("hit auth me");
     const octokit = octokitMain(req.user.githubAccessToken);
     const response = await octokit.request("GET /user");
     res.json(response.data);
@@ -19,7 +19,7 @@ router.get("/me", autheticateUser, async (req, res, next) => {
 });
 
 //get user info by username
-router.get("/:username", autheticateUser, async (req, res, next) => {
+router.get("/:username", authenticateUser, async (req, res, next) => {
   try {
     const octokit = octokitMain(req.user.githubAccessToken);
     const username = req.params.username;
@@ -36,7 +36,7 @@ router.get("/:username", autheticateUser, async (req, res, next) => {
 });
 
 //get all followers of the authenticated user
-router.get("/me/followers", autheticateUser, async (req, res, next) => {
+router.get("/me/followers", authenticateUser, async (req, res, next) => {
   try {
     const octokit = octokitMain(req.user.githubAccessToken);
     const response = await octokit.paginate("GET /user/followers", {
@@ -51,7 +51,7 @@ router.get("/me/followers", autheticateUser, async (req, res, next) => {
 });
 
 //get list of people followed by the authenticated user
-router.get("/me/following", autheticateUser, async (req, res, next) => {
+router.get("/me/following", authenticateUser, async (req, res, next) => {
   try {
     const octokit = octokitMain(req.user.githubAccessToken);
     const response = await octokit.paginate("GET /user/following", {
