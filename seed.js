@@ -17,7 +17,7 @@ const seedRepos = [
     name: "gitnalysis_be",
     full_name: "johnsmith104/gitnalysis_be",
     url: "https://api.github.com/users/andreatranchina",
-    id: "91538619", //user id
+    githubId: "91538619", //user id
   },
 ];
 
