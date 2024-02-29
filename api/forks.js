@@ -1,13 +1,13 @@
 const router=require("express").Router();
 const octokitMain = require("../services/octokit");
-const autheticateUser= require("../middleware/auth")
+const authenticateUser= require("../middleware/auth")
 const {calcTimeAgo} = require("../services/helperFunctions");
 
 // mounted on: http://localhost:8080/api/forks"
 
 // 
 //get all forks for a given repo
-router.get("/:owner/:repo",autheticateUser,async(req,res,next)=>{
+router.get("/:owner/:repo",authenticateUser,async(req,res,next)=>{
     try {
         //we still want the frontend to send the owner and the repo
         const owner=req.params.owner
@@ -59,7 +59,7 @@ router.get("/:owner/:repo",autheticateUser,async(req,res,next)=>{
 //     ]
 // }
 
-router.get("/:owner/:repo/personalized",autheticateUser,async(req,res,next)=>{
+router.get("/:owner/:repo/personalized",authenticateUser,async(req,res,next)=>{
     try {
         //we still want the frontend to send the owner and the repo
         const owner=req.params.owner

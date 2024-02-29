@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const octokitMain = require("../services/octokit");
-const autheticateUser = require("../middleware/auth");
+const authenticateUser = require("../middleware/auth");
 // mounted on: "http://localhost:8080/api/deployments"
 
 //note: the following routes still cannot be fully checkes as no deployments have been made yet
@@ -8,7 +8,7 @@ const autheticateUser = require("../middleware/auth");
 //get the total number of deployments linked to a repo
 router.get(
   "/:owner/:repo/count/getNum",
-  autheticateUser,
+  authenticateUser,
   async (req, res, next) => {
     try {
       const owner = req.params.owner;
@@ -49,7 +49,7 @@ router.get(
 // }
 router.get(
   "/:owner/:repo/deploymentFrequency/:timeRange",
-  autheticateUser,
+  authenticateUser,
   async (req, res, next) => {
     try {
       const owner = req.params.owner;
@@ -178,7 +178,7 @@ async function calculateCFR(owner, repo, accesstoken) {
 }
 
 // route to get Change Failure Rate (CFR)
-router.get("/:owner/:repo/cfr", autheticateUser, async (req, res) => {
+router.get("/:owner/:repo/cfr", authenticateUser, async (req, res) => {
   const owner = req.params.owner;
   const repo = req.params.repo;
 
@@ -192,7 +192,7 @@ router.get("/:owner/:repo/cfr", autheticateUser, async (req, res) => {
 });
 
 // Define a route to calculate MTTR for a given repository
-router.get("/:owner/:repo/mttr", autheticateUser, async (req, res) => {
+router.get("/:owner/:repo/mttr", authenticateUser, async (req, res) => {
   try {
     const octokit = octokitMain(req.user.githubAccessToken);
     const { owner, repo } = req.params;

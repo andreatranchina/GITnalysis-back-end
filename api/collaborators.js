@@ -1,12 +1,12 @@
 const router = require("express").Router();
 const octokitMain = require("../services/octokit");
-const autheticateUser = require("../middleware/auth");
+const authenticateUser = require("../middleware/auth");
 
 // mounted on: http://localhost:8080/api/collaborators"
 
 //
 //get all collaborators for a given repo
-router.get("/:owner/:repo", autheticateUser, async (req, res, next) => {
+router.get("/:owner/:repo", authenticateUser, async (req, res, next) => {
   try {
     //we still want the frontend to send the owner and the repo
     const owner = req.params.owner;
@@ -34,7 +34,7 @@ router.get("/:owner/:repo", autheticateUser, async (req, res, next) => {
 });
 
 //get number of collaborators for a give repo
-router.get("/count/:owner/:repo", autheticateUser, async (req, res, next) => {
+router.get("/count/:owner/:repo", authenticateUser, async (req, res, next) => {
   try {
     const owner = req.params.owner;
     const repo = req.params.repo;
