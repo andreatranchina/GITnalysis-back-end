@@ -3,7 +3,6 @@ const User = require("../db/models/user")
 const GitHubStrategy = require('passport-github2').Strategy;
 require("dotenv").config();
 
-
 module.exports =  (passport) =>{
   
   passport.serializeUser((user, done) =>{

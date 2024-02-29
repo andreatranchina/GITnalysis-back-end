@@ -10,7 +10,7 @@ User.hasMany(Repo, {
 });
 
 Repo.belongsTo(User, {
-  foreignKey: "userId",
+  foreignKey: "githubId",
 });
 
 Repo.hasMany(Branch, {

@@ -37,7 +37,6 @@ const seed = async () => {
     await User.bulkCreate(seedUsers);
     await Repo.bulkCreate(seedRepos);
     await Branch.bulkCreate(seedBranches);
-
     console.log("Seeding completed successfully.");
   } catch (error) {
     console.error("Seeding error:", error);
