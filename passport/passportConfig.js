@@ -11,9 +11,14 @@ module.exports =  (passport) =>{
   });
   
   passport.deserializeUser(async (id, done) => {
-    console.log("User id in deserializeUser: ", id);
-    User.findByPk(id).then((user) => done(null, user)); // Use 'done' instead of 'cb'
-  });
+  console.log("User id in deserializeUser: ", id);
+  try {
+    const user = await User.findByPk(id);
+    done(null, user);
+  } catch (error) {
+    done(error);
+  }
+});
   
   
   passport.use(new GitHubStrategy({
