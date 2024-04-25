@@ -11,7 +11,7 @@ router.get("/me", authenticateUser, async (req, res, next) => {
     console.log("hit auth me");
     const octokit = octokitMain(req.user.githubAccessToken);
     const response = await octokit.request("GET /user");
-    res.json(response.data);
+    res.json(response.data, "from api/me route");
   } catch (error) {
     console.log("Error in user/me® route", error);
     next(error);
