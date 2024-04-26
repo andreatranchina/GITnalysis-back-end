@@ -57,7 +57,7 @@ if (process.env.BACKEND_URL === "http://localhost:8080") {
     session({
       secret: "secret",
       store: sessionStore,
-      resave: false,
+      resave: true,
       saveUninitialized: false,
       cookie: {
         maxAge: 7 * 24 * 60 * 60 * 1000, // The maximum age (in milliseconds) of a valid session.
