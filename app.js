@@ -4,6 +4,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser"); //may or may not need
+const cookieParser = require("cookie-parser");
 const app = express();
 
 //Database imports
@@ -17,6 +18,7 @@ const PORT = 8080;
 
 //setup middleware
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 // app.enable("trust proxy",true);
 app.use(
