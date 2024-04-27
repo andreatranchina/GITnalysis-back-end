@@ -55,6 +55,7 @@ if (process.env.BACKEND_URL === "http://localhost:8080") {
     })
   );
 } else {
+  console.log("using production session");
   app.use(
     session({
       secret: "secret",
@@ -132,6 +133,12 @@ app.use("/api", require("./api"));
 // 404 Handling - This route should be at the end to handle unknown routes
 app.use((error, req, res, next) => {
   res.status(error.status || 500).send(error.message);
+});
+
+app.use((req, res, next) => {
+  console.log("Incoming request:", req.method, req.url);
+  console.log("Request headers:", req.headers);
+  next();
 });
 
 //Run server function
