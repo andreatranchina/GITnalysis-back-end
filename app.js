@@ -73,6 +73,7 @@ if (process.env.BACKEND_URL === "http://localhost:8080") {
         secure: true,
         httpOnly: false,
       },
+      credentials: true,
     })
   );
 }
@@ -86,13 +87,16 @@ app.get("/", (req, res, next) => {
   res.send("Hitting backend root success!");
 });
 
+//mounting on routes
+app.use("/api", require("./api"));
+
 //mounted on `localhost:8080/github`
 app.get(
   "/github/auth",
   passport.authenticate("github", { scope: ["user", "repo"] })
 );
 
-//mounted on `localhost:8080/github`
+// Mounted on `localhost:8080/github`
 app.get(
   "/github/auth/callback",
   passport.authenticate("github", {
@@ -100,12 +104,13 @@ app.get(
   }),
   (req, res, next) => {
     // Successful authentication, log the user in
+    console.log(JSON.stringify(req.session) + " is the session");
     const user = req.user;
+    console.log(JSON.stringify(user) + " is the user");
     req.logIn(user, function (err) {
       if (err) {
         return next(err);
       }
-      // res.send("User Logged IN")
       // Construct the redirect URL with the repository name as a query parameter
       const redirectUrl = `${process.env.FRONTEND_URL}/?username=${user.username}&userId=${user.githubID}`;
       return res.redirect(redirectUrl); // Redirect to your desired URL
@@ -131,9 +136,6 @@ app.get("/github/logout", async (req, res, next) => {
     });
   });
 });
-
-//mounting on routes
-app.use("/api", require("./api"));
 
 // 404 Handling - This route should be at the end to handle unknown routes
 app.use((error, req, res, next) => {
