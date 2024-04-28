@@ -1,4 +1,5 @@
 const authenticateUser = (req, res, next) => {
+  console.log(JSON.stringify(req.user));
   // Print cookies
   console.log("Cookies:", JSON.stringify(req.cookies));
 
