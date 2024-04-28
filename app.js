@@ -80,7 +80,7 @@ if (process.env.BACKEND_URL === "http://localhost:8080") {
   console.log("using production session");
   app.use(
     session({
-      secret: "secret",
+      secret: GITHUB_CLIENT_SECRET,
       store: sessionStore,
       resave: true,
       saveUninitialized: false,
