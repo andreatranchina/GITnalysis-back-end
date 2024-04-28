@@ -4,7 +4,6 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser"); //may or may not need
-const cookieParser = require("cookie-parser");
 const app = express();
 
 //Database imports
@@ -21,11 +20,28 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 // app.enable("trust proxy",true);
+
+//logging all headers
 app.use((req, res, next) => {
   console.log("Incoming request:", req.method, req.url);
   console.log("Request headers:", req.headers);
+
+  // Store reference to original res.end function
+  const originalEnd = res.end;
+
+  // Replace res.end function with custom function
+  res.end = function (data, encoding, cb) {
+    // Call original res.end function
+    originalEnd.call(this, data, encoding, cb);
+
+    // Log response details
+    console.log("Outgoing response:", res.statusCode);
+    console.log("Response headers:", res.getHeaders());
+  };
+
   next();
 });
+
 app.use(
   cors({
     //production front end url
