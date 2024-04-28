@@ -1,10 +1,10 @@
 const authenticateUser = (req, res, next) => {
-  console.log(JSON.stringify(req.user));
+  console.log(JSON.stringify(req.session.user));
   // Print cookies
-  console.log("Cookies:", JSON.stringify(req.cookies));
+  console.log("Cookies:", JSON.stringify(req.session.cookies));
 
   // Print signed cookies
-  console.log("Signed Cookies:", JSON.stringify(req.signedCookies));
+  console.log("Signed Cookies:", JSON.stringify(req.session.signedCookies));
   try {
     if (req.isAuthenticated()) {
       // If the user is authenticated, allow them to proceed
