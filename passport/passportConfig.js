@@ -5,7 +5,10 @@ require("dotenv").config();
 
 module.exports = (passport) => {
   passport.serializeUser((user, done) => {
-    console.log("Serialized User");
+    console.log("Serialized User" + user.githubId);
+    console.log(user);
+    console.log(user.id);
+    console.log(JSON.stringify(user));
     done(null, user.githubID);
   });
 

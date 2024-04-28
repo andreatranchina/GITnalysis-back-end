@@ -61,10 +61,6 @@ if (process.env.BACKEND_URL === "http://localhost:8080") {
   app.set("trust proxy", 1);
 }
 
-app.use(passport.initialize());
-app.use(passport.session());
-require("./passport/passportConfig")(passport);
-
 if (process.env.BACKEND_URL === "http://localhost:8080") {
   app.use(
     session({
@@ -98,6 +94,9 @@ if (process.env.BACKEND_URL === "http://localhost:8080") {
     })
   );
 }
+app.use(passport.initialize());
+app.use(passport.session());
+require("./passport/passportConfig")(passport);
 
 //hiting root route
 app.get("/", (req, res, next) => {
