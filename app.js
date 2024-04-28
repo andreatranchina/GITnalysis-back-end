@@ -47,10 +47,10 @@ app.use(
   cors({
     //production front end url
     origin: process.env.FRONTEND_URL, // allow to server to accept request from different origin
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    methods: ["GET", "POST", "PUT", "PATCH", "OPTIONS", "DELETE"],
     credentials: true,
-    allowedHeaders:
-      "Authorization, X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
+    // allowedHeaders:
+    //   "Authorization, X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
     preflightContinue: true,
   })
 );
