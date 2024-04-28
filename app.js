@@ -103,9 +103,6 @@ app.get("/", (req, res, next) => {
   res.send("Hitting backend root success!");
 });
 
-//mounting on routes
-app.use("/api", require("./api"));
-
 //mounted on `localhost:8080/github`
 app.get(
   "/github/auth",
@@ -152,6 +149,8 @@ app.get("/github/logout", async (req, res, next) => {
     });
   });
 });
+//mounting on routes
+app.use("/api", require("./api"));
 
 // 404 Handling - This route should be at the end to handle unknown routes
 app.use((error, req, res, next) => {
