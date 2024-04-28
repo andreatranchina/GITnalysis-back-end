@@ -5,15 +5,14 @@ const { User } = require("../db/models");
 
 // mounted on: http://localhost:8080/api/users
 
-//get authenticated user
 router.get("/me", authenticateUser, async (req, res, next) => {
   try {
     console.log("hit auth me");
     const octokit = octokitMain(req.user.githubAccessToken);
     const response = await octokit.request("GET /user");
-    res.json(response.data, "from api/me route");
+    res.json({ data: response.data, message: "from api/me route" });
   } catch (error) {
-    console.log("Error in user/me® route", error);
+    console.log("Error in user/me route", error);
     next(error);
   }
 });
